@@ -1,0 +1,238 @@
+.locations-section {
+  padding: 2.5rem 1rem;
+  background-color: #111827;
+}
+.locations-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.locations-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+.locations-header h2 {
+  font-size: 2rem;
+  color: white;
+  margin-bottom: 0.75rem;
+}
+.highlight-text {
+  color: coral;
+}
+.locations-header p {
+  color: #9ca3af;
+  font-size: 1rem;
+}
+.locations-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+.location-card {
+  background: #111827;
+  border: 1px solid #374151;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+.location-card:hover {
+  transform: scale(1.03);
+  border-color: rgba(6, 182, 212, 0.4);
+}
+.location-image-container {
+  position: relative;
+  height: 9rem;
+  overflow: hidden;
+}
+.location-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+.location-card:hover .location-image {
+  transform: scale(1.08);
+}
+.location-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+}
+.featured-badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  background: linear-gradient(to right, #06b6d4, #3b82f6);
+  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+}
+.rating-badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: white;
+}
+.location-city {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: white;
+  font-size: 0.75rem;
+}
+.location-content {
+  padding: 1.2rem;
+}
+.location-content h3 {
+  color: white;
+  font-size: 1.125rem;
+  margin-bottom: 0.4rem;
+  transition: color 0.3s ease;
+}
+.location-card:hover h3 {
+  color: #06b6d4;
+}
+.address {
+  color: #9ca3af;
+  font-size: 0.8125rem;
+  margin-bottom: 0.75rem;
+}
+.sports-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+.sport-tag {
+  background: #1f2937;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.6875rem;
+  color: #06b6d4;
+}
+.sport-tag.muted {
+  color: #9ca3af;
+}
+.amenities {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.amenity-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #9ca3af;
+  font-size: 0.6875rem;
+}
+.location-info {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-bottom: 1rem;
+}
+.info-line {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.25rem;
+}
+.text-cyan {
+  color: #06b6d4;
+  font-weight: 500;
+}
+.view-btn {
+  background: linear-gradient(to right, #06b6d4, #3b82f6);
+  color: white;
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: 0.6rem;
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+.view-btn:hover .arrow {
+  transform: translateX(0.25rem);
+}
+.arrow {
+  transition: transform 0.2s ease;
+}
+.view-all-wrapper {
+  text-align: center;
+  margin-top: 2.5rem;
+}
+.view-all-btn {
+  background: linear-gradient(to right, #06b6d4, #3b82f6);
+  color: white;
+  padding: 0.8rem 1.6rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.view-all-btn:hover {
+  transform: scale(1.05);
+}
+
+/* Icon utility */
+.icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+.icon.small {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+.icon.gray {
+  color: #9ca3af;
+}
+.icon.yellow {
+  fill: #facc15;
+  color: #facc15;
+}
+.location-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0f172a, #1e293b, #334155);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e2e8f0;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 8px;
+  text-align: center;
+  padding: 10px;
+}
+.sport-tag.sport-color {
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color: white;
+  font-weight: 500;
+}
+.location-stats {
+  margin-top: 3rem;
+  display: flex;
+  justify-content: space-around;
+  gap: 2rem;
+  text-align: center;
+}
+.location-stats h3 {
+  font-size: 2rem;
+  color: var(--theme-accent);
+}

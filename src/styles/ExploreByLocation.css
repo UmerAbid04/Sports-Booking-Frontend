@@ -1,0 +1,268 @@
+/* src/styles/ExploreByLocation.css */
+.body{
+  background-color: #1f2937;
+}
+.explore-location-section {
+  padding: 2rem 1rem;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+.explore-location-container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.explore-location-heading {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.explore-location-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+.explore-section {
+  padding: 4rem 1rem;
+  background-color: #111827;
+  color: var(--color-foreground);
+}
+
+.explore-container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.explore-heading {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 0 1rem;
+}
+.explore-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+  color: white;
+}
+
+
+.location {
+  color:#facc15
+}
+.explore-subtitle {
+  color: var(--muted-foreground);
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+.explore-city-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(to right, var(--brand-primary), var(--brand-hover));
+  color: white;
+  padding: 0.75rem 1.5rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 50;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+.explore-city-button:hover {
+  background: linear-gradient(to right, #06b6d4, #2563eb);
+}
+.explore-location-title{
+  color:white;
+}
+
+.explore-location-subtitle {
+  color:white;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+
+.location-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.location-card {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.location-card:hover {
+  transform: scale(1.03);
+}
+
+.location-bg {
+  position: absolute;
+  inset: 0;
+}
+
+.location-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(1.5px) brightness(0.8);
+  opacity: 0.6; /* Was 0.2 or 0.25 before */
+  transform: scale(1.05); /* Optional for subtle zoom effect */
+}
+
+.location-gradient {
+  background: rgba(0, 0, 0, 0.4); /* So content pops but image is still visible */
+}
+
+
+.location-content {
+  position: relative;
+  z-index: 10;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.location-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.location-icon-wrapper {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 0.5rem;
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  backdrop-filter: blur(6px);
+}
+
+.location-icon {
+  color: white;
+  width: 1.5rem;
+  height: 1.5rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.popular-badge {
+  background-color: var(--brand-warning);
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.location-bottom {
+  margin-top: 2rem;
+}
+
+.location-city {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.location-stats {
+  color:aliceblue;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 3rem;
+}
+
+.stats-box {
+  flex: 1;
+  text-align: center;
+}
+
+.stats-value {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.stats-label {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.stats-rating {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 1.1rem;
+}
+
+.star-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #facc15;
+}
+
+.explore-city-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(to right, var(--brand-primary), var(--brand-hover));
+  color: white;
+  padding: 0.75rem 1.5rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 50;
+  text-align: right;
+}
+
+
+.explore-city-button:hover {
+  background: linear-gradient(to right, #06b6d4, #2563eb);
+}
+
+.arrow-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.explore-location-footer {
+  text-align: center;
+  margin-top: 3rem;
+  
+}
+
+.view-all-button {
+  background: linear-gradient(to right, #06b6d4, #3b82f6);
+  color: white;
+  padding: 1rem 2rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.view-all-button:hover {
+  background: linear-gradient(to right, #06b6d4, #2563eb);
+}

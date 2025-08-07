@@ -1,0 +1,11 @@
+
+html {
+  scroll-behavior: smooth;
+}
+.main-content {
+  padding-top: 0; /* default when navbar is hidden */
+}
+
+.main-content.with-navbar {
+  padding-top: 60px !important; /* match your fixed navbar height */
+}

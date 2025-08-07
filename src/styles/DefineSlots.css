@@ -1,0 +1,60 @@
+.define-slots-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 32px;
+  background: #1e1e2f;
+  color: #f0f0f0;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.define-slots-container h2 {
+  margin-bottom: 24px;
+  font-size: 24px;
+  text-align: center;
+}
+
+.define-slots-form input[type="time"],
+.define-slots-form input[type="number"],
+.define-slots-form input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0 20px;
+  border-radius: 6px;
+  border: none;
+}
+
+.weekdays {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.weekdays label {
+  background-color: #2e2e40;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.weekdays input[type="checkbox"] {
+  margin-right: 6px;
+}
+
+.define-slots-form button {
+  padding: 12px;
+  width: 100%;
+  background: linear-gradient(to right, #4caf50, #2e7d32);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.message {
+  margin-top: 20px;
+  text-align: center;
+}

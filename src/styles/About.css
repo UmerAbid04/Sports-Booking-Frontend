@@ -1,0 +1,201 @@
+.about-section {
+  padding: 4rem 1rem;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+.about-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+}
+
+@media (min-width: 1024px) {
+  .about-container {
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+  }
+}
+
+.about-heading {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--color-foreground);
+  line-height: 1.2;
+}
+
+.fitness-journey { 
+  color: #3b82f6;
+}
+
+
+.about-description {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  color: var(--muted-foreground);
+  line-height: 1.7;
+}
+
+.about-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.stat-box {
+  background-color: var(--color-card);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease;
+}
+
+.stat-box:hover {
+  transform: translateY(-4px);
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--brand-primary);
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+}
+
+.about-image-block {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
+
+.image-container {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.about-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  border-radius: var(--radius-xl);
+}
+
+.image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.35), transparent);
+}
+
+.rating-card {
+  position: absolute;
+  bottom: -1.5rem;
+  left: -1.5rem;
+  background-color: var(--color-card);
+  color: var(--color-card-foreground);
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.rating-icon {
+  background: linear-gradient(to right, var(--brand-primary), var(--brand-hover));
+  padding: 0.75rem;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rating-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--color-foreground);
+}
+
+.rating-label {
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.core-values-section {
+  margin-top: 6rem;
+}
+
+.core-values-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--color-foreground);
+  margin-bottom: 2.5rem;
+}
+
+.core-values-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .core-values-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .core-values-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.core-value-card {
+  padding: 1rem;
+  transition: transform 0.3s ease;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-card);
+}
+
+.core-value-card:hover {
+  transform: scale(1.05);
+}
+
+.core-value-icon {
+  background: linear-gradient(to right, var(--brand-primary), var(--brand-hover));
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.core-value-title {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--color-foreground);
+}
+
+.core-value-description {
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+  margin-top: 0.25rem;
+}
+
+.icon-white {
+  color: white;
+  width: 1.5rem;
+  height: 1.5rem;
+}

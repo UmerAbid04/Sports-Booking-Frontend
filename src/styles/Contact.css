@@ -1,0 +1,201 @@
+/* Contact.css */
+
+.contact-section {
+  background: #0d0d0d;
+  color: #fff;
+  padding: 4rem 1rem;
+}
+
+.contact-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.contact-heading {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.heading-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.touch {
+  color:#e1306c
+}
+
+.heading-description {
+  font-size: 1.1rem;
+  color: #ccc;
+  max-width: 600px;
+  margin: 0.75rem auto 0;
+}
+
+.contact-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3rem;
+  justify-content: space-between;
+}
+
+.contact-form, .contact-info {
+  flex: 1;
+  min-width: 300px;
+}
+
+.form-title, .info-title {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #ccc;
+}
+
+input, textarea, select {
+  background: #1e1e1e;
+  color: #fff;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 1rem;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #888;
+}
+
+.submit-button {
+  background: linear-gradient(to right, #06b6d4, #3b82f6);
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s ease;
+  align-self: flex-start;
+}
+
+.submit-button:hover {
+  opacity: 0.9;
+}
+
+.info-block {
+  margin-bottom: 2rem;
+}
+
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.info-icon {
+  background: #1e1e1e;
+  padding: 0.75rem;
+  border-radius: 50%;
+}
+
+.info-text .info-label {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.info-content {
+  color: #ccc;
+  font-size: 0.95rem;
+}
+
+/* Color classes */
+.info-red { background-color: #ef4444; }
+.info-orange { background-color: #f97316; }
+.info-blue { background-color: #3b82f6; }
+.info-green { background-color: #10b981; }
+
+.map-placeholder {
+  background: #1e1e1e;
+  color: #aaa;
+  text-align: center;
+  padding: 2rem;
+  border-radius: 1rem;
+  margin-top: 1.5rem;
+}
+
+.map-icon {
+  width: 2rem;
+  height: 2rem;
+  color: #06b6d4;
+  margin-bottom: 0.5rem;
+}
+
+.social-block {
+  margin-top: 2rem;
+}
+
+.social-title {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.social-icons {
+  display: flex;
+  gap: 1rem;
+}
+
+.social-button {
+  background: #1e1e1e;
+  padding: 0.6rem;
+  border-radius: 50%;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.social-facebook:hover { background: #3b5998; }
+.social-instagram:hover { background: #e1306c; }
+.social-twitter:hover { background: #1da1f2; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .contact-content {
+    flex-direction: column;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+}

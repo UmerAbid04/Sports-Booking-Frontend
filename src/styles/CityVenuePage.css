@@ -1,0 +1,32 @@
+.city-venues-wrapper {
+  padding: 40px;
+  background: #121212;
+  color: #fff;
+  min-height: 100vh;
+}
+
+.city-heading {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.venue-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.venue-card {
+  background: #1e1e1e;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.venue-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
