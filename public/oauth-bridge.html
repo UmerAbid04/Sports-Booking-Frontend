@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>OAuth Bridge</title>
+  </head>
+  <body>
+    <script>
+      (async () => {
+        const params = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = params.get("access_token");
+
+        if (!accessToken) {
+          alert("No access token found");
+          return;
+        }
+
+        try {
+          const res = await fetch(`https://renderbackend-g73i.onrender.com/api/auth/supabase/callback?access_token=${accessToken}`);
+          const data = await res.json();
+
+          if (data.token) {
+            localStorage.setItem("authToken", data.token);
+            localStorage.setItem("currentUser", JSON.stringify(data.user));
+
+            // Redirect user based on role
+            const role = data.user?.role;
+            if (role === "admin") {
+              window.location.href = "/admin-panel";
+            } else if (role === "company") {
+              window.location.href = "/company-dashboard";
+            } else {
+              window.location.href = "/";
+            }
+          } else {
+            alert("Login failed: No token received.");
+          }
+        } catch (err) {
+          console.error("OAuth error:", err);
+          alert("OAuth processing failed. Check console.");
+        }
+      })();
+    </script>
+  </body>
+</html>
