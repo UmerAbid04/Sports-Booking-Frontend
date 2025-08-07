@@ -233,20 +233,11 @@ const SignupPage = ({ setShowNavbar, setShowFooter }) => {
 
         <div className="login-divider">
           <div className="login-divider-line"></div>
-          <span className="login-divider-text">Or sign up with</span>
+
           <div className="login-divider-line"></div>
         </div>
 
-        <div className="login-social-row">
-          <button
-            className="login-social-btn"
-            type="button"
-            onClick={() => handleSocialSignup("Google")}
-          >
-            <GoogleIcon />
-            Google
-          </button>
-        </div>
+        
 
         <div className="login-signup-row" style={{ justifyContent: 'center', display: 'flex', marginTop: 10 }}>
           Already have an account?
