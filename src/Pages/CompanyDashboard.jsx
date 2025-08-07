@@ -64,6 +64,7 @@ const CompanyDashboard = () => {
           revenueRes,
           totalGroundsRes,
         ]) => {
+          console.log("Bookings response:", bookingsRes.data);
           setGrounds(groundsRes.data || []);
           setRecentBookings(bookingsRes.data || []);
           setStats({
@@ -97,26 +98,41 @@ const CompanyDashboard = () => {
       .catch(() => setError("Failed to edit ground."));
   };
 
-  const handleApproveBooking = (id) => {
-    axiosInstance
-      .patch(`/api/company/dashboard/bookings/approve/${id}`)
-      .then(() =>
-        setRecentBookings((prev) => prev.filter((b) => b._id !== id))
-      )
-      .catch(() => setError("Failed to approve booking."));
+  const handleApproveBooking = async (id) => {
+    try {
+      await axiosInstance.patch(
+        `/api/company/dashboard/bookings/approve/${id}`
+      );
+      setRecentBookings((prev) =>
+        prev.map((b) => (b._id === id ? { ...b, status: "approved" } : b))
+      );
+    } catch (err) {
+      console.error(
+        "Approve booking error:",
+        err.response || err.message || err
+      );
+      setError("Failed to approve booking.");
+    }
   };
 
-  const handleRejectBooking = (id) => {
-    axiosInstance
-      .patch(`/api/company/dashboard/bookings/reject/${id}`)
-      .then(() =>
-        setRecentBookings((prev) => prev.filter((b) => b._id !== id))
-      )
-      .catch(() => setError("Failed to reject booking."));
+  const handleRejectBooking = async (id) => {
+    try {
+      await axiosInstance.patch(`/api/company/dashboard/bookings/reject/${id}`);
+      setRecentBookings((prev) =>
+        prev.map((b) => (b._id === id ? { ...b, status: "rejected" } : b))
+      );
+    } catch (err) {
+      console.error(
+        "Reject booking error:",
+        err.response || err.message || err
+      );
+      setError("Failed to reject booking.");
+    }
   };
 
   if (loading) return <div className="dashboard-container">Loading...</div>;
-  if (error) return <div className="dashboard-container error-container">{error}</div>;
+  if (error)
+    return <div className="dashboard-container error-container">{error}</div>;
 
   return (
     <div className="dashboard-container">
@@ -142,9 +158,7 @@ const CompanyDashboard = () => {
           <div>
             <div className="stat-title">Total Bookings</div>
             <div className="stat-value">{stats.totalBookings}</div>
-            <div className="stat-trend positive">
-              
-            </div>
+            <div className="stat-trend positive"></div>
           </div>
         </div>
         <div className="stat-card">
@@ -152,9 +166,7 @@ const CompanyDashboard = () => {
           <div>
             <div className="stat-title">Upcoming Bookings</div>
             <div className="stat-value">{stats.upcomingBookings}</div>
-            <div className="stat-trend positive">
-              
-            </div>
+            <div className="stat-trend positive"></div>
           </div>
         </div>
         <div className="stat-card">
@@ -162,9 +174,7 @@ const CompanyDashboard = () => {
           <div>
             <div className="stat-title">Revenue</div>
             <div className="stat-value">₨{stats.revenue.toLocaleString()}</div>
-            <div className="stat-trend positive">
-              
-            </div>
+            <div className="stat-trend positive"></div>
           </div>
         </div>
         <div className="stat-card">
@@ -178,7 +188,9 @@ const CompanyDashboard = () => {
 
       <div className="dashboard-tabs">
         <button
-          className={`dashboard-tab${activeTab === "overview" ? " active" : ""}`}
+          className={`dashboard-tab${
+            activeTab === "overview" ? " active" : ""
+          }`}
           onClick={() => setActiveTab("overview")}
         >
           Overview
@@ -190,12 +202,13 @@ const CompanyDashboard = () => {
           Grounds
         </button>
         <button
-          className={`dashboard-tab${activeTab === "bookings" ? " active" : ""}`}
+          className={`dashboard-tab${
+            activeTab === "bookings" ? " active" : ""
+          }`}
           onClick={() => setActiveTab("bookings")}
         >
           Bookings
         </button>
-       
       </div>
 
       <div className="dashboard-section">
@@ -204,15 +217,24 @@ const CompanyDashboard = () => {
             <div className="dashboard-card">
               <h3>Recent Bookings</h3>
               <div className="dashboard-list">
-                {recentBookings.map((booking) => (
-                  <div key={booking._id} className="dashboard-list-item">
+                {recentBookings.map((booking, idx) => (
+                  <div key={idx} className="dashboard-list-item">
                     <div>
-                      <div className="dashboard-list-title">{booking.client}</div>
-                      <div className="dashboard-list-sub">{booking.ground}</div>
+                      <div className="dashboard-list-title">
+                        {booking.userName}
+                      </div>
+                      <div className="dashboard-list-sub">
+                        {booking.groundName}
+                      </div>
                     </div>
                     <div className="dashboard-list-right">
-                      <div className="dashboard-list-date">{booking.date}</div>
-                      <span className={`dashboard-status ${booking.status?.toLowerCase()}`}>
+                      <div className="dashboard-list-date">
+                        {new Date(booking.slotDate).toLocaleDateString()} —{" "}
+                        {booking.startTime} to {booking.endTime}
+                      </div>
+                      <span
+                        className={`dashboard-status ${booking.status?.toLowerCase()}`}
+                      >
                         {booking.status}
                       </span>
                     </div>
@@ -244,53 +266,62 @@ const CompanyDashboard = () => {
           </div>
         )}
 
-       {activeTab === "grounds" && (
-  <div>
-    <div className="dashboard-section-header">
-      <h3>Manage Grounds</h3>
-      <button
-        className="dashboard-add-btn"
-        onClick={() => navigate("/new-venue-registration")}
-      >
-        <FaPlus /> Add Ground
-      </button>
-    </div>
-
-    <div className="dashboard-card-grid">
-      {grounds.map((ground) => {
-        console.log("Ground data:", ground); // Log all properties
-        return (
-          <div key={ground._id} className="dashboard-card">
-            <div className="dashboard-card-header">
-              <div className="dashboard-list-title">{ground.groundName}</div>
+        {activeTab === "grounds" && (
+          <div>
+            <div className="dashboard-section-header">
+              <h3>Manage Grounds</h3>
               <button
-                className="dashboard-icon-btn"
-                onClick={() => {
-                  setEditGround(ground);
-                  setShowEditModal(true);
-                }}
+                className="dashboard-add-btn"
+                onClick={() => navigate("/new-venue-registration")}
               >
-                <FaEdit />
+                <FaPlus /> Add Ground
               </button>
             </div>
-            <div className="dashboard-list-sub">Sport: {ground.sport}</div>
-            <div className="dashboard-list-sub">
-              Location: {ground.address}
-            </div>
-            <div className="dashboard-list-sub">Bookings: {ground.totalBookings}</div>
-            <div className="dashboard-list-revenue">Revenue: ₨{ground.totalRevenue}</div>
-            <div className="dashboard-status-row">
-              <span className={`dashboard-status ${ground.status?.toLowerCase()}`}>
-                {ground.status}
-              </span>
+
+            <div className="dashboard-card-grid">
+              {grounds.map((ground) => {
+                console.log("Ground data:", ground); // Log all properties
+                return (
+                  <div key={ground._id} className="dashboard-card">
+                    <div className="dashboard-card-header">
+                      <div className="dashboard-list-title">
+                        {ground.groundName}
+                      </div>
+                      <button
+                        className="dashboard-icon-btn"
+                        onClick={() => {
+                          setEditGround(ground);
+                          setShowEditModal(true);
+                        }}
+                      >
+                        <FaEdit />
+                      </button>
+                    </div>
+                    <div className="dashboard-list-sub">
+                      Sport: {ground.sport}
+                    </div>
+                    <div className="dashboard-list-sub">
+                      Location: {ground.address}
+                    </div>
+                    <div className="dashboard-list-sub">
+                      Bookings: {ground.totalBookings}
+                    </div>
+                    <div className="dashboard-list-revenue">
+                      Revenue: ₨{ground.totalRevenue}
+                    </div>
+                    <div className="dashboard-status-row">
+                      <span
+                        className={`dashboard-status ${ground.status?.toLowerCase()}`}
+                      >
+                        {ground.status}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
-        );
-      })}
-    </div>
-  </div>
-)}
-
+        )}
 
         {activeTab === "bookings" && (
           <div>
@@ -319,21 +350,43 @@ const CompanyDashboard = () => {
                 <tbody>
                   {recentBookings.map((booking) => (
                     <tr key={booking._id}>
-                      <td>{booking.client}</td>
-                      <td>{booking.ground}</td>
-                      <td>{booking.date} {booking.time}</td>
+                      <td>{booking.userName}</td>
+                      <td>{booking.groundName}</td>
                       <td>
-                        <span className={`dashboard-status ${booking.status?.toLowerCase()}`}>
+                        {new Date(booking.slotDate).toLocaleDateString()}{" "}
+                        {booking.startTime} - {booking.endTime}
+                      </td>
+                      <td>
+                        <span
+                          className={`dashboard-status ${booking.status?.toLowerCase()}`}
+                        >
                           {booking.status}
                         </span>
                       </td>
                       <td>
-                        <button className="dashboard-icon-btn" onClick={() => handleApproveBooking(booking._id)}>
-                          <FaCheckCircle />
-                        </button>
-                        <button className="dashboard-icon-btn" onClick={() => handleRejectBooking(booking._id)}>
-                          <FaTimesCircle />
-                        </button>
+                        {booking.status === "pending" ? (
+                          <>
+                            <button
+                              className="dashboard-icon-btn"
+                              onClick={() => handleApproveBooking(booking._id)}
+                              title="Approve"
+                            >
+                              <FaCheckCircle />
+                            </button>
+                            <button
+                              className="dashboard-icon-btn"
+                              onClick={() => handleRejectBooking(booking._id)}
+                              title="Reject"
+                            >
+                              <FaTimesCircle />
+                            </button>
+                          </>
+                        ) : (
+                          <span style={{ fontStyle: "italic", color: "gray" }}>
+                            {booking.status.charAt(0).toUpperCase() +
+                              booking.status.slice(1)}
+                          </span>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -342,8 +395,6 @@ const CompanyDashboard = () => {
             </div>
           </div>
         )}
-
-        
       </div>
     </div>
   );
