@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabaseClient";
+
 import {
   FaEye, FaEyeSlash, FaUser, FaBuilding, FaEnvelope,
   FaLock, FaPhone
@@ -92,9 +94,20 @@ const SignupPage = ({ setShowNavbar, setShowFooter }) => {
   };
 
   // Moved here so it’s accessible
-  const handleSocialSignup = (provider) => {
-    alert(`${provider} signup coming soon!`);
-  };
+  const handleSocialSignup = async (provider) => {
+  try {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/oauth-bridge`, // Adjust path if needed
+      },
+    });
+    if (error) throw error;
+  } catch (err) {
+    console.error("OAuth Signup Error:", err.message);
+  }
+};
+
 
   return (
     <div className="login-bg">
