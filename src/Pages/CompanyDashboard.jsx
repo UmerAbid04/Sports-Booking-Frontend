@@ -44,6 +44,16 @@ const CompanyDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const bookingsPerPage = 5;
+  const indexOfLastBooking = currentPage * bookingsPerPage;
+  const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
+  const currentBookings = recentBookings.slice(
+    indexOfFirstBooking,
+    indexOfLastBooking
+  );
+  const totalPages = Math.ceil(recentBookings.length / bookingsPerPage);
+
   useEffect(() => {
     setLoading(true);
     setError(null);
@@ -217,29 +227,32 @@ const CompanyDashboard = () => {
             <div className="dashboard-card">
               <h3>Recent Bookings</h3>
               <div className="dashboard-list">
-                {recentBookings.map((booking, idx) => (
-                  <div key={idx} className="dashboard-list-item">
-                    <div>
-                      <div className="dashboard-list-title">
-                        {booking.userName}
+                {[...recentBookings]
+                  .reverse()
+                  .slice(0, 5)
+                  .map((booking, idx) => (
+                    <div key={idx} className="dashboard-list-item">
+                      <div>
+                        <div className="dashboard-list-title">
+                          {booking.userName}
+                        </div>
+                        <div className="dashboard-list-sub">
+                          {booking.groundName}
+                        </div>
                       </div>
-                      <div className="dashboard-list-sub">
-                        {booking.groundName}
+                      <div className="dashboard-list-right">
+                        <div className="dashboard-list-date">
+                          {new Date(booking.slotDate).toLocaleDateString()} —{" "}
+                          {booking.startTime} to {booking.endTime}
+                        </div>
+                        <span
+                          className={`dashboard-status ${booking.status?.toLowerCase()}`}
+                        >
+                          {booking.status}
+                        </span>
                       </div>
                     </div>
-                    <div className="dashboard-list-right">
-                      <div className="dashboard-list-date">
-                        {new Date(booking.slotDate).toLocaleDateString()} —{" "}
-                        {booking.startTime} to {booking.endTime}
-                      </div>
-                      <span
-                        className={`dashboard-status ${booking.status?.toLowerCase()}`}
-                      >
-                        {booking.status}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
             <div className="dashboard-card">
@@ -348,7 +361,7 @@ const CompanyDashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {recentBookings.map((booking) => (
+                  {currentBookings.map((booking) => (
                     <tr key={booking._id}>
                       <td>{booking.userName}</td>
                       <td>{booking.groundName}</td>
@@ -392,6 +405,27 @@ const CompanyDashboard = () => {
                   ))}
                 </tbody>
               </table>
+              <div className="pagination-controls">
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </button>
+                <span>
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </button>
+              </div>
             </div>
           </div>
         )}
