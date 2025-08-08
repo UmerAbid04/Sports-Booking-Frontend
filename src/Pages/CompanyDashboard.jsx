@@ -377,29 +377,10 @@ const CompanyDashboard = () => {
                         </span>
                       </td>
                       <td>
-                        {booking.status === "pending" ? (
-                          <>
-                            <button
-                              className="dashboard-icon-btn"
-                              onClick={() => handleApproveBooking(booking._id)}
-                              title="Approve"
-                            >
-                              <FaCheckCircle />
-                            </button>
-                            <button
-                              className="dashboard-icon-btn"
-                              onClick={() => handleRejectBooking(booking._id)}
-                              title="Reject"
-                            >
-                              <FaTimesCircle />
-                            </button>
-                          </>
-                        ) : (
-                          <span style={{ fontStyle: "italic", color: "gray" }}>
-                            {booking.status.charAt(0).toUpperCase() +
-                              booking.status.slice(1)}
-                          </span>
-                        )}
+                        <span style={{ fontStyle: "italic", color: "gray" }}>
+                          {booking.status.charAt(0).toUpperCase() +
+                            booking.status.slice(1)}
+                        </span>
                       </td>
                     </tr>
                   ))}
