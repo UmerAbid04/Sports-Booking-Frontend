@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../api/axiosinstance";
+import axios from "axios";
+
 import {
   FaCalendarAlt,
   FaMapMarkerAlt,
@@ -64,40 +66,28 @@ const CompanyDashboard = () => {
       axiosInstance.get("/api/company/dashboard/upcoming-bookings"),
       axiosInstance.get("/api/company/dashboard/total-revenue"),
       axiosInstance.get("/api/company/dashboard/total-grounds"),
-    ])
-      .then(
-        ([
-          groundsRes,
-          bookingsRes,
-          totalBookingsRes,
-          upcomingBookingsRes,
-          revenueRes,
-          totalGroundsRes,
-        ]) => {
-          console.log("Bookings response:", bookingsRes.data);
-          setGrounds(groundsRes.data || []);
-          setRecentBookings(bookingsRes.data || []);
-          setStats({
-            totalBookings: totalBookingsRes.data?.count || 0,
-            upcomingBookings: upcomingBookingsRes.data?.count || 0,
-            revenue: revenueRes.data?.total || 0,
-            grounds: totalGroundsRes.data?.count || 0,
-          });
-          setLoading(false);
-        }
-      )
-      .catch(() => {
-        setError("Please wait while the admin approves your account.");
-        setLoading(false);
-      });
-  }, []);
+    ]).then(
+      ([
+        groundsRes,
+        bookingsRes,
+        totalBookingsRes,
+        upcomingBookingsRes,
+        revenueRes,
+        totalGroundsRes,
+      ]) => {
+        setGrounds(groundsRes.data || []);
+        setRecentBookings(bookingsRes.data || []);
+        setStats({
+          totalBookings: totalBookingsRes.data?.totalBookings || 0,
 
-  const handleAddGround = (groundData) => {
-    axiosInstance
-      .post("/api/company/grounds", groundData)
-      .then((res) => setGrounds((prev) => [...prev, res.data]))
-      .catch(() => setError("Failed to add ground."));
-  };
+          revenue: revenueRes.data?.totalRevenue || 0,
+          grounds: totalGroundsRes.data?.totalGrounds || 0, // confirm this key next
+        });
+
+        setLoading(false);
+      }
+    );
+  }, []);
 
   const handleEditGround = (id, groundData) => {
     axiosInstance
@@ -108,41 +98,45 @@ const CompanyDashboard = () => {
       .catch(() => setError("Failed to edit ground."));
   };
 
-  const handleApproveBooking = async (id) => {
-    try {
-      await axiosInstance.patch(
-        `/api/company/dashboard/bookings/approve/${id}`
-      );
-      setRecentBookings((prev) =>
-        prev.map((b) => (b._id === id ? { ...b, status: "approved" } : b))
-      );
-    } catch (err) {
-      console.error(
-        "Approve booking error:",
-        err.response || err.message || err
-      );
-      setError("Failed to approve booking.");
-    }
-  };
-
-  const handleRejectBooking = async (id) => {
-    try {
-      await axiosInstance.patch(`/api/company/dashboard/bookings/reject/${id}`);
-      setRecentBookings((prev) =>
-        prev.map((b) => (b._id === id ? { ...b, status: "rejected" } : b))
-      );
-    } catch (err) {
-      console.error(
-        "Reject booking error:",
-        err.response || err.message || err
-      );
-      setError("Failed to reject booking.");
-    }
-  };
-
   if (loading) return <div className="dashboard-container">Loading...</div>;
   if (error)
     return <div className="dashboard-container error-container">{error}</div>;
+
+  // Approve booking
+  const handleConfirmBooking = async (bookingId) => {
+    try {
+      const res = await axiosInstance.patch(
+        `/api/bookings/confirm/${bookingId}`
+      );
+
+      const updatedBooking = res.data.booking || res.data; // depends on backend response shape
+
+      setRecentBookings((prev) =>
+        prev.map((b) =>
+          // Use the proper ID field, e.g. bookingId or _id
+          b.bookingId === bookingId || b._id === bookingId
+            ? { ...b, status: "confirmed" }
+            : b
+        )
+      );
+    } catch (error) {
+      console.error("Failed to approve booking:", error);
+    }
+  };
+
+  // Reject booking
+  const handleRejectBooking = async (bookingId) => {
+    try {
+      await axiosInstance.put(`/api/bookings/${bookingId}/reject`);
+      setBookings((prev) =>
+        prev.map((b) =>
+          b._id === bookingId ? { ...b, status: "rejected" } : b
+        )
+      );
+    } catch (error) {
+      console.error("Failed to reject booking:", error);
+    }
+  };
 
   return (
     <div className="dashboard-container">
@@ -171,14 +165,7 @@ const CompanyDashboard = () => {
             <div className="stat-trend positive"></div>
           </div>
         </div>
-        <div className="stat-card">
-          <FaClock className="stat-icon" />
-          <div>
-            <div className="stat-title">Upcoming Bookings</div>
-            <div className="stat-value">{stats.upcomingBookings}</div>
-            <div className="stat-trend positive"></div>
-          </div>
-        </div>
+
         <div className="stat-card">
           <FaChartLine className="stat-icon" />
           <div>
@@ -230,29 +217,66 @@ const CompanyDashboard = () => {
                 {[...recentBookings]
                   .reverse()
                   .slice(0, 5)
-                  .map((booking, idx) => (
-                    <div key={idx} className="dashboard-list-item">
-                      <div>
-                        <div className="dashboard-list-title">
-                          {booking.userName}
+                  .map((booking, idx) => {
+                    console.log("Booking object in Overview tab:", booking);
+                    return (
+                      <div key={idx} className="dashboard-list-item">
+                        <div>
+                          <div className="dashboard-list-title">
+                            {booking.userName}
+                          </div>
+                          <div className="dashboard-list-sub">
+                            {booking.groundName}
+                          </div>
                         </div>
-                        <div className="dashboard-list-sub">
-                          {booking.groundName}
+                        <div className="dashboard-list-right">
+                          <div className="dashboard-list-date">
+                            {new Date(booking.slotDate).toLocaleDateString()} —{" "}
+                            {booking.startTime} to {booking.endTime}
+                          </div>
+
+                          {booking.status?.toLowerCase() ===
+                          "pending-confirmation" ? (
+                            <div className="booking-action-buttons">
+                              <button
+                                className="accept-btn"
+                                onClick={() => {
+                                  console.log(
+                                    "Clicked booking id:",
+                                    booking._id,
+                                    booking.bookingId
+                                  );
+                                  handleConfirmBooking(
+                                    booking.bookingId || booking._id
+                                  );
+                                }}
+                              >
+                                Approve
+                              </button>
+                              <button
+                                className="reject-btn"
+                                onClick={() => handleRejectBooking(booking._id)}
+                              >
+                                Reject
+                              </button>
+                              <span
+                                className={`dashboard-status ${booking.status?.toLowerCase()}`}
+                                style={{ marginRight: "8px" }}
+                              >
+                                {booking.status}
+                              </span>
+                            </div>
+                          ) : (
+                            <span
+                              className={`dashboard-status ${booking.status?.toLowerCase()}`}
+                            >
+                              {booking.status}
+                            </span>
+                          )}
                         </div>
                       </div>
-                      <div className="dashboard-list-right">
-                        <div className="dashboard-list-date">
-                          {new Date(booking.slotDate).toLocaleDateString()} —{" "}
-                          {booking.startTime} to {booking.endTime}
-                        </div>
-                        <span
-                          className={`dashboard-status ${booking.status?.toLowerCase()}`}
-                        >
-                          {booking.status}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
               </div>
             </div>
             <div className="dashboard-card">
@@ -361,29 +385,32 @@ const CompanyDashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {currentBookings.map((booking) => (
-                    <tr key={booking._id}>
-                      <td>{booking.userName}</td>
-                      <td>{booking.groundName}</td>
-                      <td>
-                        {new Date(booking.slotDate).toLocaleDateString()}{" "}
-                        {booking.startTime} - {booking.endTime}
-                      </td>
-                      <td>
-                        <span
-                          className={`dashboard-status ${booking.status?.toLowerCase()}`}
-                        >
-                          {booking.status}
-                        </span>
-                      </td>
-                      <td>
-                        <span style={{ fontStyle: "italic", color: "gray" }}>
-                          {booking.status.charAt(0).toUpperCase() +
-                            booking.status.slice(1)}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
+                  {currentBookings.map((booking) => {
+                    console.log("Booking object in Bookings tab:", booking);
+                    return (
+                      <tr key={booking._id}>
+                        <td>{booking.userName}</td>
+                        <td>{booking.groundName}</td>
+                        <td>
+                          {new Date(booking.slotDate).toLocaleDateString()}{" "}
+                          {booking.startTime} - {booking.endTime}
+                        </td>
+                        <td>
+                          <span
+                            className={`dashboard-status ${booking.status?.toLowerCase()}`}
+                          >
+                            {booking.status}
+                          </span>
+                        </td>
+                        <td>
+                          <span style={{ fontStyle: "italic", color: "gray" }}>
+                            {booking.status.charAt(0).toUpperCase() +
+                              booking.status.slice(1)}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
               <div className="pagination-controls">

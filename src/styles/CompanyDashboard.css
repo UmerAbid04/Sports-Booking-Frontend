@@ -404,3 +404,82 @@
   background-color: #ccc;
   cursor: not-allowed;
 }
+.booking-action-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.accept-btn {
+  background-color: #28a745;
+  border: none;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.reject-btn {
+  background-color: #dc3545;
+  border: none;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.accept-btn:hover {
+  background-color: #218838;
+}
+
+.reject-btn:hover {
+  background-color: #c82333;
+}
+/* Status + buttons container */
+.booking-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Status badge styling */
+.dashboard-status.pending-confirmation {
+  background-color: #ff9800; /* orange */
+  color: white;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+/* Accept button */
+.accept-btn {
+  background-color: #28a745;
+  border: none;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s ease;
+}
+
+.accept-btn:hover {
+  background-color: #218838;
+}
+
+/* Reject button */
+.reject-btn {
+  background-color: #dc3545;
+  border: none;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s ease;
+}
+
+.reject-btn:hover {
+  background-color: #c82333;
+}
