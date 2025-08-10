@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+// src/App.jsx
+import React, { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
+
+import supabase from './lib/supabaseClient';
 
 import HomePage from "./Pages/HomePage";
 import LoginPage from "./Pages/LoginPage";
@@ -25,14 +28,55 @@ import "./App.css";
 function App() {
   const [showNavbar, setShowNavbar] = useState(true);
   const [showFooter, setShowFooter] = useState(true);
+  const [user, setUser] = useState(null); // Track logged-in user
 
+  useEffect(() => {
+    // Try to restore session from localStorage tokens
+    async function restoreSession() {
+      const access_token = localStorage.getItem('sb-access-token');
+      const refresh_token = localStorage.getItem('sb-refresh-token');
+
+      if (access_token && refresh_token) {
+        const { error } = await supabase.auth.setSession({
+          access_token,
+          refresh_token
+        });
+
+        if (error) {
+          console.error('Failed to restore session:', error.message);
+          setUser(null);
+        } else {
+          const { data } = supabase.auth.getSession();
+          setUser(data.session?.user ?? null);
+          console.log('Session restored:', data.session);
+        }
+      } else {
+        // No session tokens found
+        setUser(null);
+      }
+    }
+
+    restoreSession();
+
+    // Also listen for auth state changes (login/logout)
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session?.user) setUser(session.user);
+        else setUser(null);
+      }
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
 
   return (
     <>
-    <header><title>Sport Book</title></header>
-    
-    <ScrollToTop />
-      {showNavbar && <Navbar />}
+      <header><title>Sport Book</title></header>
+
+      <ScrollToTop />
+      {showNavbar && <Navbar user={user} />}
 
       <div className={`main-content ${showNavbar ? "with-navbar" : ""}`}>
 
@@ -43,6 +87,7 @@ function App() {
               <HomePage
                 setShowNavbar={setShowNavbar}
                 setShowFooter={setShowFooter}
+                user={user}
               />
             }
           />
@@ -64,20 +109,13 @@ function App() {
               />
             }
           />
-          <Route
-            path="/new-venue-registration"
-            element={
-              <NewVenueReg
-                setShowNavbar={setShowNavbar}
-                setShowFooter={setShowFooter}
-              />
-            }
-          />
+          {/* Other routes remain unchanged */}
+          <Route path="/new-venue-registration" element={<NewVenueReg setShowNavbar={setShowNavbar} setShowFooter={setShowFooter} />} />
           <Route path="/venue-dashboard" element={<VenueDashboard />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/booking" element={<BookingPage />} />
           <Route path="/category" element={<CategoryPage />} />
-          <Route path="/city/:cityName" element={<CityVenuePage />}/>
+          <Route path="/city/:cityName" element={<CityVenuePage />} />
           <Route path="/forgot-password" element={<ForgotPassword setShowNavbar={setShowNavbar} setShowFooter={setShowFooter} />} />
           <Route path="/account" element={<UserSetting />} />
           <Route path="/company-dashboard" element={<CompanyDashboard />} />
