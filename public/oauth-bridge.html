@@ -5,9 +5,7 @@
     <title>OAuth Bridge</title>
   </head>
   <body>
-    <!-- Load Supabase library first -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
       console.log("OAuth Bridge Loaded");
       console.log("typeof supabase:", typeof supabase);
@@ -25,24 +23,10 @@
           });
 
           if (error) {
-            console.error("Error in getSessionFromUrl:", error);
-            return;
-          }
-
-          console.log("Session from URL:", data.session);
-
-          const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
-
-          if (sessionError) {
-            console.error("Error getting session:", sessionError);
-            return;
-          }
-
-          if (session) {
-            console.log("Session stored successfully:", session);
-            window.location.href = "/";
+            console.error("Error getting session from URL:", error);
           } else {
-            console.log("No active session found after parsing URL.");
+            console.log("Session stored:", data.session);
+            window.location.href = "/";
           }
         } catch (err) {
           console.error("Unexpected error:", err);
