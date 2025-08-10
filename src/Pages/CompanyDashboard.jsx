@@ -1,21 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../api/axiosinstance";
-
 import {
   FaCalendarAlt,
   FaMapMarkerAlt,
-  FaUsers,
   FaChartLine,
   FaPlus,
   FaEdit,
-  FaClock,
-  FaCheckCircle,
-  FaTimesCircle,
-  FaEye,
   FaCog,
   FaBell,
-  FaSearch,
-  FaFilter,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import "../styles/CompanyDashboard.css";
@@ -23,8 +15,6 @@ import "../styles/CompanyDashboard.css";
 const CompanyDashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedGround, setSelectedGround] = useState(null);
   const [grounds, setGrounds] = useState([]);
   const [recentBookings, setRecentBookings] = useState([]);
   const [stats, setStats] = useState({
@@ -33,27 +23,16 @@ const CompanyDashboard = () => {
     revenue: 0,
     grounds: 0,
   });
-  const [editGround, setEditGround] = useState({
-    id: null,
-    name: "",
-    sport: "",
-    location: "",
-    status: "Active",
-    bookings: 0,
-    revenue: 0,
-  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const bookingsPerPage = 5;
-  const indexOfLastBooking = currentPage * bookingsPerPage;
-  const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
-  const currentBookings = recentBookings.slice(
-    indexOfFirstBooking,
-    indexOfLastBooking
-  );
-  const totalPages = Math.ceil(recentBookings.length / bookingsPerPage);
+
+  // Search & Filter states
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
     setLoading(true);
@@ -65,41 +44,31 @@ const CompanyDashboard = () => {
       axiosInstance.get("/api/company/dashboard/upcoming-bookings"),
       axiosInstance.get("/api/company/dashboard/total-revenue"),
       axiosInstance.get("/api/company/dashboard/total-grounds"),
-    ]).then(
-      ([
-        groundsRes,
-        bookingsRes,
-        totalBookingsRes,
-        upcomingBookingsRes,
-        revenueRes,
-        totalGroundsRes,
-      ]) => {
-        setGrounds(groundsRes.data || []);
-        setRecentBookings(bookingsRes.data || []);
-        setStats({
-          totalBookings: totalBookingsRes.data?.totalBookings || 0,
-
-          revenue: revenueRes.data?.totalRevenue || 0,
-          grounds: totalGroundsRes.data?.totalGrounds || 0, // confirm this key next
-        });
-
-        setLoading(false);
-      }
-    );
-  }, []);
-
-  const handleEditGround = (id, groundData) => {
-    axiosInstance
-      .put(`/api/company/grounds/${id}`, groundData)
-      .then((res) =>
-        setGrounds((prev) => prev.map((g) => (g._id === id ? res.data : g)))
+    ])
+      .then(
+        ([
+          groundsRes,
+          bookingsRes,
+          totalBookingsRes,
+          upcomingBookingsRes,
+          revenueRes,
+          totalGroundsRes,
+        ]) => {
+          setGrounds(groundsRes.data || []);
+          setRecentBookings(bookingsRes.data || []);
+          setStats({
+            totalBookings: totalBookingsRes.data?.totalBookings || 0,
+            revenue: revenueRes.data?.totalRevenue || 0,
+            grounds: totalGroundsRes.data?.totalGrounds || 0,
+          });
+          setLoading(false);
+        }
       )
-      .catch(() => setError("Failed to edit ground."));
-  };
-
-  if (loading) return <div className="dashboard-container">Loading...</div>;
-  if (error)
-    return <div className="dashboard-container error-container">{error}</div>;
+      .catch(() => {
+        setError("Failed to load dashboard data");
+        setLoading(false);
+      });
+  }, []);
 
   const handleConfirmBooking = async (bookingId) => {
     try {
@@ -108,46 +77,62 @@ const CompanyDashboard = () => {
         {},
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // company token
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
-      console.log("Booking confirmed:", res.data);
       alert("Booking confirmed successfully!");
-      // refresh or update state here
-      setBookings((prevBookings) =>
-        prevBookings.map((booking) =>
-          booking._id === bookingId
+      setRecentBookings((prev) =>
+        prev.map((booking) =>
+          booking.bookingId === bookingId
             ? { ...booking, status: "confirmed" }
             : booking
         )
       );
     } catch (err) {
       console.error("Error confirming booking:", err);
-      //alert(err.response?.data?.message || "Failed to confirm booking");
     }
   };
 
   const handleRejectBooking = async (bookingId) => {
     try {
-      // Temporary API call — matches confirm route style but for rejection
       await axiosInstance.delete(`/api/company/bookings/reject/${bookingId}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`, // company token
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-
-      // Update state to remove booking from UI
-      setBookings((prev) =>
+      setRecentBookings((prev) =>
         prev.filter((booking) => booking.bookingId !== bookingId)
       );
-
       alert("Booking rejected successfully!");
     } catch (err) {
       console.error("Error rejecting booking:", err);
-      alert(err.response?.data?.message || "Failed to reject booking");
     }
   };
+
+  // Filtered bookings before pagination
+  const filteredBookings = recentBookings.filter((booking) => {
+    const matchesSearch =
+      booking.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      booking.groundName.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" ||
+      booking.status.toLowerCase() === statusFilter.toLowerCase();
+    return matchesSearch && matchesStatus;
+  });
+
+  // Pagination after filtering
+  const indexOfLastBooking = currentPage * bookingsPerPage;
+  const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
+  const currentBookings = filteredBookings.slice(
+    indexOfFirstBooking,
+    indexOfLastBooking
+  );
+  const totalPages = Math.ceil(filteredBookings.length / bookingsPerPage);
+
+  if (loading) return <div className="dashboard-container">Loading...</div>;
+  if (error)
+    return <div className="dashboard-container error-container">{error}</div>;
 
   return (
     <div className="dashboard-container">
@@ -173,16 +158,13 @@ const CompanyDashboard = () => {
           <div>
             <div className="stat-title">Total Bookings</div>
             <div className="stat-value">{stats.totalBookings}</div>
-            <div className="stat-trend positive"></div>
           </div>
         </div>
-
         <div className="stat-card">
           <FaChartLine className="stat-icon" />
           <div>
             <div className="stat-title">Revenue</div>
             <div className="stat-value">₨{stats.revenue.toLocaleString()}</div>
-            <div className="stat-trend positive"></div>
           </div>
         </div>
         <div className="stat-card">
@@ -220,79 +202,70 @@ const CompanyDashboard = () => {
       </div>
 
       <div className="dashboard-section">
-       {activeTab === "overview" && (
-  <div className="dashboard-overview-grid" style={{ gridTemplateColumns: "1fr" }}>
-    <div className="dashboard-card">
-      <h3>Recent Bookings</h3>
-      <div className="dashboard-list">
-        {[...recentBookings]
-          .reverse()
-          .slice(0, 5)
-          .map((booking) => {
-            return (
-              <div
-                key={booking.bookingId}
-                className="dashboard-list-item"
-              >
-                <div>
-                  <div className="dashboard-list-title">
-                    {booking.userName}
-                  </div>
-                  <div className="dashboard-list-sub">
-                    {booking.groundName}
-                  </div>
-                </div>
-                <div className="dashboard-list-right">
-                  <div className="dashboard-list-date">
-                    {new Date(booking.slotDate).toLocaleDateString()} —{" "}
-                    {booking.startTime} to {booking.endTime}
-                  </div>
-
-                  {booking.status?.toLowerCase() ===
-                  "pending-confirmation" ? (
-                    <div className="booking-action-buttons">
-                      <button
-                        className="accept-btn"
-                        onClick={() =>
-                          handleConfirmBooking(booking.bookingId)
-                        }
-                      >
-                        Confirm
-                      </button>
-                      <button
-                        className="reject-btn"
-                        onClick={() =>
-                          handleRejectBooking(booking.bookingId)
-                        }
-                      >
-                        Reject
-                      </button>
-                      <span
-                        className={`dashboard-status ${booking.status?.toLowerCase()}`}
-                        style={{ marginRight: "8px" }}
-                      >
-                        {booking.status}
-                      </span>
-                    </div>
-                  ) : (
-                    <span
-                      className={`dashboard-status ${booking.status?.toLowerCase()}`}
+        {activeTab === "overview" && (
+          <div
+            className="dashboard-overview-grid"
+            style={{ gridTemplateColumns: "1fr" }}
+          >
+            <div className="dashboard-card">
+              <h3>Recent Bookings</h3>
+              <div className="dashboard-list">
+                {[...recentBookings]
+                  .reverse()
+                  .slice(0, 5)
+                  .map((booking) => (
+                    <div
+                      key={booking.bookingId}
+                      className="dashboard-list-item"
                     >
-                      {booking.status}
-                    </span>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-      </div>
-    </div>
-  </div>
-)}
- 
-               
-      
+                      <div>
+                        <div className="dashboard-list-title">
+                          {booking.userName}
+                        </div>
+                        <div className="dashboard-list-sub">
+                          {booking.groundName}
+                        </div>
+                      </div>
+                      <div className="dashboard-list-right">
+                        <div className="dashboard-list-date">
+                          {new Date(booking.slotDate).toLocaleDateString()} —{" "}
+                          {booking.startTime} to {booking.endTime}
+                        </div>
 
+                        {booking.status?.toLowerCase() ===
+                        "pending-confirmation" ? (
+                          <div className="booking-action-buttons">
+                            <button
+                              className="accept-btn"
+                              onClick={() =>
+                                handleConfirmBooking(booking.bookingId)
+                              }
+                            >
+                              Confirm
+                            </button>
+                            <button
+                              className="reject-btn"
+                              onClick={() =>
+                                handleRejectBooking(booking.bookingId)
+                              }
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        ) : (
+                          <span
+                            className={`dashboard-status ${booking.status?.toLowerCase()}`}
+                          >
+                            {booking.status}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {activeTab === "grounds" && (
           <div>
@@ -305,47 +278,43 @@ const CompanyDashboard = () => {
                 <FaPlus /> Add Ground
               </button>
             </div>
-
             <div className="dashboard-card-grid">
-              {grounds.map((ground) => {
-                return (
-                  <div key={ground._id} className="dashboard-card">
-                    <div className="dashboard-card-header">
-                      <div className="dashboard-list-title">
-                        {ground.groundName}
-                      </div>
-                      <button
-                        className="dashboard-icon-btn"
-                        onClick={() => {
-                          setEditGround(ground);
-                          setShowEditModal(true);
-                        }}
-                      >
-                        <FaEdit />
-                      </button>
+              {grounds.map((ground) => (
+                <div key={ground._id} className="dashboard-card">
+                  <div className="dashboard-card-header">
+                    <div className="dashboard-list-title">
+                      {ground.groundName}
                     </div>
-                    <div className="dashboard-list-sub">
-                      Sport: {ground.sport}
-                    </div>
-                    <div className="dashboard-list-sub">
-                      Location: {ground.address}
-                    </div>
-                    <div className="dashboard-list-sub">
-                      Bookings: {ground.totalBookings}
-                    </div>
-                    <div className="dashboard-list-revenue">
-                      Revenue: ₨{ground.totalRevenue}
-                    </div>
-                    <div className="dashboard-status-row">
-                      <span
-                        className={`dashboard-status ${ground.status?.toLowerCase()}`}
-                      >
-                        {ground.status}
-                      </span>
-                    </div>
+                    <button
+                      className="dashboard-icon-btn"
+                      onClick={() => {
+                        // Add your edit modal logic here
+                      }}
+                    >
+                      <FaEdit />
+                    </button>
                   </div>
-                );
-              })}
+                  <div className="dashboard-list-sub">
+                    Sport: {ground.sport}
+                  </div>
+                  <div className="dashboard-list-sub">
+                    Location: {ground.address}
+                  </div>
+                  <div className="dashboard-list-sub">
+                    Bookings: {ground.totalBookings}
+                  </div>
+                  <div className="dashboard-list-revenue">
+                    Revenue: ₨{ground.totalRevenue}
+                  </div>
+                  <div className="dashboard-status-row">
+                    <span
+                      className={`dashboard-status ${ground.status?.toLowerCase()}`}
+                    >
+                      {ground.status}
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -354,15 +323,43 @@ const CompanyDashboard = () => {
           <div>
             <div className="dashboard-section-header">
               <h3>All Bookings</h3>
-              <div>
-                <button className="dashboard-icon-btn">
-                  <FaSearch /> Search
-                </button>
-                <button className="dashboard-icon-btn">
-                  <FaFilter /> Filter
-                </button>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <input
+                  type="text"
+                  placeholder="Search by client or ground"
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  style={{
+                    padding: "6px 10px",
+                    borderRadius: "4px",
+                    border: "1px solid #ccc",
+                  }}
+                />
+                <select
+                  value={statusFilter}
+                  onChange={(e) => {
+                    setStatusFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  style={{
+                    padding: "6px 10px",
+                    borderRadius: "4px",
+                    border: "1px solid #ccc",
+                  }}
+                >
+                  <option value="all">All Status</option>
+                  <option value="pending-confirmation">
+                    Pending Confirmation
+                  </option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="rejected">Rejected</option>
+                </select>
               </div>
             </div>
+
             <div className="dashboard-table-wrapper">
               <table className="dashboard-table">
                 <thead>
@@ -371,35 +368,26 @@ const CompanyDashboard = () => {
                     <th>Ground</th>
                     <th>Date & Time</th>
                     <th>Status</th>
-                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {currentBookings.map((booking) => {
-                    return (
-                      <tr key={booking._id}>
-                        <td>{booking.userName}</td>
-                        <td>{booking.groundName}</td>
-                        <td>
-                          {new Date(booking.slotDate).toLocaleDateString()}{" "}
-                          {booking.startTime} - {booking.endTime}
-                        </td>
-                        <td>
-                          <span
-                            className={`dashboard-status ${booking.status?.toLowerCase()}`}
-                          >
-                            {booking.status}
-                          </span>
-                        </td>
-                        <td>
-                          <span style={{ fontStyle: "italic", color: "gray" }}>
-                            {booking.status.charAt(0).toUpperCase() +
-                              booking.status.slice(1)}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                  {currentBookings.map((booking) => (
+                    <tr key={booking.bookingId}>
+                      <td>{booking.userName}</td>
+                      <td>{booking.groundName}</td>
+                      <td>
+                        {new Date(booking.slotDate).toLocaleDateString()}{" "}
+                        {booking.startTime} - {booking.endTime}
+                      </td>
+                      <td>
+                        <span
+                          className={`dashboard-status ${booking.status?.toLowerCase()}`}
+                        >
+                          {booking.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
               <div className="pagination-controls">
