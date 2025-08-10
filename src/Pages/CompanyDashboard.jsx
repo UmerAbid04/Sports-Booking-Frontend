@@ -221,98 +221,75 @@ const CompanyDashboard = () => {
 
       <div className="dashboard-section">
         {activeTab === "overview" && (
-          <div className="dashboard-overview-grid">
-            <div className="dashboard-card">
-              <h3>Recent Bookings</h3>
-              <div className="dashboard-list">
-                {[...recentBookings]
-                  .reverse()
-                  .slice(0, 5)
-                  .map((booking) => {
-                    return (
-                      <div
-                        key={booking.bookingId}
-                        className="dashboard-list-item"
-                      >
-                        <div>
-                          <div className="dashboard-list-title">
-                            {booking.userName}
-                          </div>
-                          <div className="dashboard-list-sub">
-                            {booking.groundName}
-                          </div>
-                        </div>
-                        <div className="dashboard-list-right">
-                          <div className="dashboard-list-date">
-                            {new Date(booking.slotDate).toLocaleDateString()} —{" "}
-                            {booking.startTime} to {booking.endTime}
-                          </div>
-
-                          {booking.status?.toLowerCase() ===
-                          "pending-confirmation" ? (
-                            <div className="booking-action-buttons">
-                              <button
-                                className="accept-btn"
-                                onClick={() =>
-                                  handleConfirmBooking(booking.bookingId)
-                                }
-                              >
-                                Confirm
-                              </button>
-                              <button
-                                className="reject-btn"
-                                onClick={() =>
-                                  handleRejectBooking(booking.bookingId)
-                                }
-                              >
-                                Reject
-                              </button>
-                              <span
-                                className={`dashboard-status ${booking.status?.toLowerCase()}`}
-                                style={{ marginRight: "8px" }}
-                              >
-                                {booking.status}
-                              </span>
-                            </div>
-                          ) : (
-                            <span
-                              className={`dashboard-status ${booking.status?.toLowerCase()}`}
-                            >
-                              {booking.status}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-              </div>
-            </div>
-            <div className="dashboard-card">
-              <h3>Ground Performance</h3>
-              <div className="dashboard-list">
-                {grounds.slice(0, 3).map((ground, index) => (
-                  <div
-                    key={ground._id || `ground-${index}`}
-                    className="dashboard-list-item"
-                  >
-                    <div>
-                      <div className="dashboard-list-title">{ground.name}</div>
-                      <div className="dashboard-list-sub">{ground.sport}</div>
-                    </div>
-                    <div className="dashboard-list-right">
-                      <div className="dashboard-list-revenue">
-                        ₨{ground.revenue}
-                      </div>
-                      <div className="dashboard-list-bookings">
-                        {ground.bookings} bookings
-                      </div>
-                    </div>
+  <div className="dashboard-overview-grid">
+    <div className="dashboard-card">
+      <h3>Recent Bookings</h3>
+      <div className="dashboard-list">
+        {[...recentBookings]
+          .reverse()
+          .slice(0, 5)
+          .map((booking) => {
+            return (
+              <div
+                key={booking.bookingId}
+                className="dashboard-list-item"
+              >
+                <div>
+                  <div className="dashboard-list-title">
+                    {booking.userName}
                   </div>
-                ))}
+                  <div className="dashboard-list-sub">
+                    {booking.groundName}
+                  </div>
+                </div>
+                <div className="dashboard-list-right">
+                  <div className="dashboard-list-date">
+                    {new Date(booking.slotDate).toLocaleDateString()} —{" "}
+                    {booking.startTime} to {booking.endTime}
+                  </div>
+
+                  {booking.status?.toLowerCase() ===
+                  "pending-confirmation" ? (
+                    <div className="booking-action-buttons">
+                      <button
+                        className="accept-btn"
+                        onClick={() =>
+                          handleConfirmBooking(booking.bookingId)
+                        }
+                      >
+                        Confirm
+                      </button>
+                      <button
+                        className="reject-btn"
+                        onClick={() =>
+                          handleRejectBooking(booking.bookingId)
+                        }
+                      >
+                        Reject
+                      </button>
+                      <span
+                        className={`dashboard-status ${booking.status?.toLowerCase()}`}
+                        style={{ marginRight: "8px" }}
+                      >
+                        {booking.status}
+                      </span>
+                    </div>
+                  ) : (
+                    <span
+                      className={`dashboard-status ${booking.status?.toLowerCase()}`}
+                    >
+                      {booking.status}
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
-          </div>
-        )}
+            );
+          })}
+      </div>
+    </div>
+  </div>
+)}
+
 
         {activeTab === "grounds" && (
           <div>
