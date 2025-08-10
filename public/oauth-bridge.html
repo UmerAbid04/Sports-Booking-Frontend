@@ -14,24 +14,36 @@
       const SUPABASE_ANON_KEY =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoc2Z4Y2VzdWhicHVocXV1em9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwNzcxNjQsImV4cCI6MjA2NzY1MzE2NH0.fS-T2lJGSpc8OWrOADjrpg8E-ZwX0AcBVxBxnrJ0KbY";
 
-      // Initialize Supabase client
       const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
       (async () => {
         try {
-          // Supabase v2 automatically parses the OAuth tokens from URL hash on page load
-          const { data: { session }, error } = await supabaseClient.auth.getSession();
+          // Parse session from URL hash and store it locally
+          const { data, error } = await supabaseClient.auth.getSessionFromUrl({
+            storeSession: true,
+          });
 
           if (error) {
-            console.error("Error getting session:", error);
-          } else if (session) {
-            console.log("Session retrieved successfully:", session);
+            console.error("Error in getSessionFromUrl:", error);
+            return;
+          }
 
-            // Redirect to homepage or app dashboard
+          console.log("Session from URL:", data.session);
+
+          // Confirm session stored successfully
+          const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+
+          if (sessionError) {
+            console.error("Error getting session:", sessionError);
+            return;
+          }
+
+          if (session) {
+            console.log("Session stored successfully:", session);
+            // Redirect to home or app main page
             window.location.href = "/";
           } else {
-            console.log("No active session found.");
-            // Optionally redirect to login page or show message
+            console.log("No active session found after parsing URL.");
           }
         } catch (err) {
           console.error("Unexpected error:", err);
@@ -40,4 +52,3 @@
     </script>
   </body>
 </html>
-  
