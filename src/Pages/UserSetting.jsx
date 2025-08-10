@@ -57,7 +57,7 @@ const UserSettings = () => {
                 time: formatTime(b.slot?.startTime || b.slot?.time || null),
                 price:
                   typeof b.totalAmount === "number"
-                    ? `Rs ${b.totalAmount}`
+                    ? `${b.totalAmount}`
                     : "Not specified",
                 status: b.status || "pending",
                 review: b.review || null,
@@ -447,3 +447,4 @@ const UserSettings = () => {
 };
 
 export default UserSettings;
+
