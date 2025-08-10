@@ -1,5 +1,6 @@
 // src/lib/supabaseClient.js
 import { createClient } from '@supabase/supabase-js';
+import supabase from '../supabaseClient';
 
 // Replace with your own Supabase project URL and anon key
 const SUPABASE_URL = 'https://qhsfxcesuhbpvhquuzod.supabase.co';

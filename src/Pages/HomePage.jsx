@@ -10,6 +10,7 @@ import Reviews from "../Components/HomePage/Reviews";
 import Sponsors from "../Components/HomePage/Sponsors";
 import Contact from "../Components/HomePage/Contact";
 import About from "../Components/HomePage/About";
+import supabase from '../supabaseClient';
 
 
 

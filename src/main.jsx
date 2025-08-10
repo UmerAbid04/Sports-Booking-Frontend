@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google'; // ✅ import this
 import App from './App';
 import './index.css';
+import supabase from '../supabaseClient';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
