@@ -14,23 +14,25 @@
       const SUPABASE_ANON_KEY =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoc2Z4Y2VzdWhicHVocXV1em9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwNzcxNjQsImV4cCI6MjA2NzY1MzE2NH0.fS-T2lJGSpc8OWrOADjrpg8E-ZwX0AcBVxBxnrJ0KbY";
 
-      // Use a different variable name to avoid shadowing the global supabase object
+      // Initialize Supabase client
       const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
       (async () => {
         try {
-          const { data, error } = await supabaseClient.auth.getSessionFromUrl({
-            storeSession: true,
-          });
-          console.log("Exchange result:", { data, error });
+          // Supabase v2 automatically parses the OAuth tokens from URL hash on page load
+          const { data: { session }, error } = await supabaseClient.auth.getSession();
 
           if (error) {
-            console.error("Error exchanging code:", error);
-          } else {
-            console.log("Session stored successfully:", data);
-          }
+            console.error("Error getting session:", error);
+          } else if (session) {
+            console.log("Session retrieved successfully:", session);
 
-          window.location.href = "/";
+            // Redirect to homepage or app dashboard
+            window.location.href = "/";
+          } else {
+            console.log("No active session found.");
+            // Optionally redirect to login page or show message
+          }
         } catch (err) {
           console.error("Unexpected error:", err);
         }
@@ -38,3 +40,4 @@
     </script>
   </body>
 </html>
+  
