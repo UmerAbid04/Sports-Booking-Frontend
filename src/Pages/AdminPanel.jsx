@@ -28,10 +28,10 @@ const AdminPanel = () => {
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalCompanies: 0,
-    pendingBookings: 0,
+    successRate: 0,
     totalRevenue: 0,
     activeUsers: 0,
-    approvalRate: 0
+    averageBookingAmount: 0
   });
 
   useEffect(() => {
@@ -145,8 +145,8 @@ const AdminPanel = () => {
     icon={FaBuilding}
   />
   <StatCard
-    title="Pending Bookings"
-    value={stats.pendingBookings || '0'}
+    title="Success Rate"
+    value={stats.successRate || '0'}
     icon={FaClock}
   />
   <StatCard
@@ -160,8 +160,8 @@ const AdminPanel = () => {
     icon={FaChartLine}
   />
   <StatCard
-    title="Total Grounds"
-    value={stats.totalGrounds?.toLocaleString() || '0'}
+    title="Average Booking Amount"
+    value={stats.averageBookingAmount?.toLocaleString() || '0'}
     icon={FaBuilding}
   />
 </div>
