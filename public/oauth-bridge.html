@@ -1,62 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>OAuth Bridge (Debug)</title>
-</head>
-<body>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  (async () => {
-    const SUPABASE_URL = "https://qhsfxcesuhbpvhquuzod.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoc2Z4Y2VzdWhicHZocXF1em9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwNzcxNjQsImV4cCI6MjA2NzY1MzE2NH0.fS-T2lJGSpc8OWrOADjrpg8E-ZwX0AcBVxBxnrJ0KbY";
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>OAuth Bridge</title>
+  </head>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      console.log("OAuth Bridge Loaded");
+      console.log("Current URL:", window.location.href);
 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const SUPABASE_URL = "https://qhsfxcesuhbpvhquuzod.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoc2Z4Y2VzdWhicHZocXV1em9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwNzcxNjQsImV4cCI6MjA2NzY1MzE2NH0.fS-T2lJGSpc8OWrOADjrpg8E-ZwX0AcBVxBxnrJ0KbY";
 
-    console.log("OAuth Bridge Loaded");
-    console.log("Current URL:", window.location.href);
+      const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Step 1: Exchange the auth code for a session
-    const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+      (async () => {
+        try {
+          const { data, error } = await supabase.auth.getSessionFromUrl({
+            storeSession: true,
+          });
+          console.log("Exchange result:", { data, error });
 
-    console.log("Exchange result:", { data, error });
+          if (error) {
+            console.error("Error exchanging code:", error);
+          } else {
+            console.log("Session stored successfully:", data);
+          }
 
-    if (error) {
-      console.error("Error exchanging code:", error);
-      alert("OAuth Error: " + error.message);
-      window.location.href = "/login";
-      return;
-    }
-
-    const session = data?.session;
-    console.log("Session object:", session);
-
-    if (!session) {
-      console.error("No session found after exchange");
-      alert("No session found. Redirecting to login.");
-      window.location.href = "/login";
-      return;
-    }
-
-    // Step 2: Save token & user info locally
-    localStorage.setItem("authToken", session.access_token);
-    localStorage.setItem("currentUser", JSON.stringify(session.user));
-
-    console.log("User saved to localStorage:", session.user);
-
-    // Step 3: Redirect based on role
-    if (session.user?.role === "admin") {
-      console.log("Redirecting to admin panel");
-      window.location.href = "/admin-panel";
-    } else if (session.user?.role === "company") {
-      console.log("Redirecting to company dashboard");
-      window.location.href = "/company-dashboard";
-    } else {
-      console.log("Redirecting to home");
-      window.location.href = "/";
-    }
-  })();
-</script>
-</body>
+          window.location.href = "/";
+        } catch (err) {
+          console.error("Unexpected error:", err);
+        }
+      })();
+    </script>
+  </body>
 </html>
