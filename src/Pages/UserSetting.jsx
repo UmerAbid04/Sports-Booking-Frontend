@@ -28,7 +28,6 @@ const UserSettings = () => {
         );
 
         const data = await res.json();
-        console.log("API bookings response:", data);
 
         if (res.ok) {
           const formatted = data.bookings
@@ -57,7 +56,7 @@ const UserSettings = () => {
                 time: formatTime(b.slot?.startTime || b.slot?.time || null),
                 price:
                   typeof b.totalAmount === "number"
-                    ? `${b.totalAmount}`
+                    ? `Rs ${b.totalAmount}`
                     : "Not specified",
                 status: b.status || "pending",
                 review: b.review || null,
@@ -65,7 +64,6 @@ const UserSettings = () => {
             });
 
           setBookings(formatted);
-          console.log("Formatted bookings:", formatted);
         } else {
           alert("Failed to load booking history.");
         }
@@ -150,11 +148,54 @@ const UserSettings = () => {
     }
   };
 
-  const handleCancelBooking = (bookingId) => {
-    const updated = bookings.map((b) =>
-      b.id === bookingId ? { ...b, status: "cancelled" } : b
-    );
-    setBookings(updated);
+  const handleCancelBooking = async (bookingId) => {
+    if (!window.confirm("Are you sure you want to cancel this booking?"))
+      return;
+
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        alert("Not authenticated. Please log in again.");
+        return;
+      }
+
+      const res = await fetch(
+        `https://renderbackend-g73i.onrender.com/api/user/cancel/${bookingId}`,
+        {
+          method: "PATCH", // <-- changed from PUT to PATCH
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const text = await res.text();
+      console.log("Raw server response:", text);
+
+      const contentType = res.headers.get("content-type") || "";
+      let data;
+      if (contentType.includes("application/json")) {
+        data = JSON.parse(text);
+      } else {
+        data = { message: "Server did not return JSON" };
+      }
+
+      if (res.ok) {
+        alert("Booking cancelled successfully.");
+        setBookings((prev) =>
+          prev.map((b) =>
+            b.id === bookingId ? { ...b, status: "cancelled" } : b
+          )
+        );
+      } else {
+        alert(data.message || "Failed to cancel booking.");
+      }
+    } catch (error) {
+      console.error("Cancel booking error:", error);
+      alert("An error occurred while cancelling the booking.");
+    }
   };
 
   const handleLogout = () => {
@@ -447,4 +488,3 @@ const UserSettings = () => {
 };
 
 export default UserSettings;
-
