@@ -124,7 +124,7 @@ const CompanyDashboard = () => {
       );
     } catch (err) {
       console.error("Error confirming booking:", err);
-      alert(err.response?.data?.message || "Failed to confirm booking");
+      //alert(err.response?.data?.message || "Failed to confirm booking");
     }
   };
 
