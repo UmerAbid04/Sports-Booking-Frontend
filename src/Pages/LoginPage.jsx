@@ -4,6 +4,13 @@ import { FaEye, FaEyeSlash, FaUser, FaBuilding, FaEnvelope, FaLock, FaFacebookF 
 import { useNavigate } from "react-router-dom";
 import "../styles/LoginSignup.css";
 import axios from "../api/axiosinstance"; 
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  "https://qhsfxcesuhbpvhquuzod.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoc2Z4Y2VzdWhicHZocXF1em9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwNzcxNjQsImV4cCI6MjA2NzY1MzE2NH0.fS-T2lJGSpc8OWrOADjrpg8E-ZwX0AcBVxBxnrJ0KbY"
+);
+
 
 const GoogleIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -203,9 +210,23 @@ const handleSocialLogin = () => {
   <button
     className="login-social-btn"
     type="button"
-    onClick={() => {
-      window.location.href = `https://qhsfxcesuhbpvhquuzod.supabase.co/auth/v1/authorize?provider=google&redirect_to=https://sports-booking-frontend-sage.vercel.app/oauth-bridge.html`;
-    }}
+    onClick={async () => {
+  // ✅ Clear old app tokens
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("currentUser");
+
+  // ✅ Clear Supabase session so it doesn't reuse old Google account
+  await supabase.auth.signOut();
+
+  // ✅ Start fresh Google OAuth login
+  supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: "https://sports-booking-frontend-sage.vercel.app/oauth-bridge.html"
+    }
+  });
+}}
+
   >
     <GoogleIcon />
     Google

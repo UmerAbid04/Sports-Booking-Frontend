@@ -1,45 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>OAuth Bridge</title>
-  </head>
-  <body>
-    <script>
-      (async () => {
-        const params = new URLSearchParams(window.location.hash.substring(1));
-        const accessToken = params.get("access_token");
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OAuth Bridge</title>
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  (async () => {
+    const SUPABASE_URL = "https://qhsfxcesuhbpvhquuzod.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoc2Z4Y2VzdWhicHZocXF1em9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwNzcxNjQsImV4cCI6MjA2NzY1MzE2NH0.fS-T2lJGSpc8OWrOADjrpg8E-ZwX0AcBVxBxnrJ0KbY";
 
-        if (!accessToken) {
-          alert("No access token found");
-          return;
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ✅ Clear any old tokens first
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("currentUser");
+
+    // ✅ Always fetch the latest Supabase session
+    const { data, error } = await supabase.auth.getSession();
+    if (error) {
+      console.error("Error getting session:", error);
+      window.location.href = "/login";
+      return;
+    }
+
+    const session = data.session;
+    if (!session) {
+      console.error("No session found");
+      window.location.href = "/login";
+      return;
+    }
+
+    const accessToken = session.access_token;
+
+    try {
+      // ✅ Call your backend with the *fresh* Supabase token
+      const res = await fetch(
+        `https://renderbackend-g73i.onrender.com/api/auth/supabase/callback?access_token=${accessToken}`
+      );
+      const backendData = await res.json();
+
+      if (backendData.token) {
+        // Store the new app token & user
+        localStorage.setItem("authToken", backendData.token);
+        localStorage.setItem("currentUser", JSON.stringify(backendData.user));
+
+        // Role-based redirects
+        const role = backendData.user?.role;
+        if (role === "admin") {
+          window.location.href = "/admin-panel";
+        } else if (role === "company") {
+          window.location.href = "/company-dashboard";
+        } else {
+          window.location.href = "/";
         }
-
-        try {
-          const res = await fetch(`https://renderbackend-g73i.onrender.com/api/auth/supabase/callback?access_token=${accessToken}`);
-          const data = await res.json();
-
-          if (data.token) {
-            localStorage.setItem("authToken", data.token);
-            localStorage.setItem("currentUser", JSON.stringify(data.user));
-
-            // Redirect user based on role
-            const role = data.user?.role;
-            if (role === "admin") {
-              window.location.href = "/admin-panel";
-            } else if (role === "company") {
-              window.location.href = "/company-dashboard";
-            } else {
-              window.location.href = "/";
-            }
-          } else {
-            alert("Login failed: No token received.");
-          }
-        } catch (err) {
-          console.error("OAuth error:", err);
-          alert("OAuth processing failed. Check console.");
-        }
-      })();
-    </script>
-  </body>
+      } else {
+        alert("Login failed: No token received from backend.");
+      }
+    } catch (err) {
+      console.error("OAuth error:", err);
+      alert("OAuth processing failed. Check console.");
+    }
+  })();
+</script>
+</body>
 </html>
