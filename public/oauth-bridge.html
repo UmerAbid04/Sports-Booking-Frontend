@@ -14,54 +14,38 @@
 
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // ✅ Clear any old tokens first
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("currentUser");
-
-    // ✅ Always fetch the latest Supabase session
-    const { data, error } = await supabase.auth.getSession();
-    if (error) {
-      console.error("Error getting session:", error);
-      window.location.href = "/login";
-      return;
-    }
-
-    const session = data.session;
-    if (!session) {
-      console.error("No session found");
-      window.location.href = "/login";
-      return;
-    }
-
-    const accessToken = session.access_token;
-
-    try {
-      // ✅ Call your backend with the *fresh* Supabase token
-      const res = await fetch(
-        `https://renderbackend-g73i.onrender.com/api/auth/supabase/callback?access_token=${accessToken}`
-      );
-      const backendData = await res.json();
-
-      if (backendData.token) {
-        // Store the new app token & user
-        localStorage.setItem("authToken", backendData.token);
-        localStorage.setItem("currentUser", JSON.stringify(backendData.user));
-
-        // Role-based redirects
-        const role = backendData.user?.role;
-        if (role === "admin") {
-          window.location.href = "/admin-panel";
-        } else if (role === "company") {
-          window.location.href = "/company-dashboard";
-        } else {
-          window.location.href = "/";
-        }
+    function redirectByRole(user) {
+      const role = user?.role;
+      if (role === "admin") {
+        window.location.href = "/admin-panel";
+      } else if (role === "company") {
+        window.location.href = "/company-dashboard";
       } else {
-        alert("Login failed: No token received from backend.");
+        window.location.href = "/";
       }
-    } catch (err) {
-      console.error("OAuth error:", err);
-      alert("OAuth processing failed. Check console.");
+    }
+
+    async function handleSession(session) {
+      const token = session.access_token;
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("currentUser", JSON.stringify(session.user));
+      redirectByRole(session.user);
+    }
+
+    // Listen for the auth event after redirect
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        handleSession(session);
+      } else {
+        console.error("No session found after redirect");
+        window.location.href = "/login";
+      }
+    });
+
+    // Also try to fetch immediately in case session is ready
+    const { data } = await supabase.auth.getSession();
+    if (data.session) {
+      handleSession(data.session);
     }
   })();
 </script>
