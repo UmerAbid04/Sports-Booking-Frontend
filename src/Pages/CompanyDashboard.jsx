@@ -220,8 +220,8 @@ const CompanyDashboard = () => {
       </div>
 
       <div className="dashboard-section">
-        {activeTab === "overview" && (
-  <div className="dashboard-overview-grid">
+       {activeTab === "overview" && (
+  <div className="dashboard-overview-grid" style={{ gridTemplateColumns: "1fr" }}>
     <div className="dashboard-card">
       <h3>Recent Bookings</h3>
       <div className="dashboard-list">
@@ -289,6 +289,9 @@ const CompanyDashboard = () => {
     </div>
   </div>
 )}
+ 
+               
+      
 
 
         {activeTab === "grounds" && (
