@@ -8,25 +8,46 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
       console.log("OAuth Bridge Loaded");
-      console.log("typeof supabase:", typeof supabase);
 
       const SUPABASE_URL = "https://qhsfxcesuhbpvhquuzod.supabase.co";
-      const SUPABASE_ANON_KEY =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoc2Z4Y2VzdWhicHZocXV1em9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwNzcxNjQsImV4cCI6MjA2NzY1MzE2NH0.fS-T2lJGSpc8OWrOADjrpg8E-ZwX0AcBVxBxnrJ0KbY";
+      const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoc2Z4Y2VzdWhicHZocXV1em9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwNzcxNjQsImV4cCI6MjA2NzY1MzE2NH0.fS-T2lJGSpc8OWrOADjrpg8E-ZwX0AcBVxBxnrJ0KbY";
 
       const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+      // Helper to parse URL hash params into an object
+      function parseHashParams(hash) {
+        return hash
+          .substring(1) // remove '#'
+          .split('&')
+          .reduce((result, item) => {
+            const [key, value] = item.split('=');
+            result[key] = decodeURIComponent(value);
+            return result;
+          }, {});
+      }
+
       (async () => {
         try {
-          const { data, error } = await supabaseClient.auth.getSessionFromUrl({
-            storeSession: true,
-          });
+          // Parse URL hash for access_token
+          const hashParams = parseHashParams(window.location.hash);
+          console.log("Hash params:", hashParams);
 
-          if (error) {
-            console.error("Error getting session from URL:", error);
-          } else {
-            console.log("Session stored:", data.session);
+          if (hashParams.access_token) {
+            // Manually set the session (this is a hack, since supabase-js v2 does not provide setSession)
+            // You can store the access token in localStorage or cookie as needed, or handle server side.
+
+            // Unfortunately, supabase-js v2 currently does not provide a direct method to set the session client-side from token.
+            // So what you do instead is store the access_token for your own use (e.g., in localStorage)
+            localStorage.setItem('sb-access-token', hashParams.access_token);
+            localStorage.setItem('sb-refresh-token', hashParams.refresh_token);
+            localStorage.setItem('sb-expires-at', hashParams.expires_at);
+
+            console.log("Access token saved to localStorage.");
+
+            // Redirect to your app main page after login
             window.location.href = "/";
+          } else {
+            console.log("No access token found in URL.");
           }
         } catch (err) {
           console.error("Unexpected error:", err);
