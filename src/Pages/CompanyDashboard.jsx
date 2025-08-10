@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../api/axiosinstance";
-import axios from "axios";
 
 import {
   FaCalendarAlt,
@@ -102,39 +101,51 @@ const CompanyDashboard = () => {
   if (error)
     return <div className="dashboard-container error-container">{error}</div>;
 
-  // Approve booking
   const handleConfirmBooking = async (bookingId) => {
     try {
       const res = await axiosInstance.patch(
-        `/api/bookings/confirm/${bookingId}`
+        `/api/company/bookings/confirm/${bookingId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // company token
+          },
+        }
       );
-
-      const updatedBooking = res.data.booking || res.data; // depends on backend response shape
-
-      setRecentBookings((prev) =>
-        prev.map((b) =>
-          // Use the proper ID field, e.g. bookingId or _id
-          b.bookingId === bookingId || b._id === bookingId
-            ? { ...b, status: "confirmed" }
-            : b
+      console.log("Booking confirmed:", res.data);
+      alert("Booking confirmed successfully!");
+      // refresh or update state here
+      setBookings((prevBookings) =>
+        prevBookings.map((booking) =>
+          booking._id === bookingId
+            ? { ...booking, status: "confirmed" }
+            : booking
         )
       );
-    } catch (error) {
-      console.error("Failed to approve booking:", error);
+    } catch (err) {
+      console.error("Error confirming booking:", err);
+      alert(err.response?.data?.message || "Failed to confirm booking");
     }
   };
 
-  // Reject booking
   const handleRejectBooking = async (bookingId) => {
     try {
-      await axiosInstance.put(`/api/bookings/${bookingId}/reject`);
+      // Temporary API call — matches confirm route style but for rejection
+      await axiosInstance.delete(`/api/company/bookings/reject/${bookingId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // company token
+        },
+      });
+
+      // Update state to remove booking from UI
       setBookings((prev) =>
-        prev.map((b) =>
-          b._id === bookingId ? { ...b, status: "rejected" } : b
-        )
+        prev.filter((booking) => booking.bookingId !== bookingId)
       );
-    } catch (error) {
-      console.error("Failed to reject booking:", error);
+
+      alert("Booking rejected successfully!");
+    } catch (err) {
+      console.error("Error rejecting booking:", err);
+      alert(err.response?.data?.message || "Failed to reject booking");
     }
   };
 
@@ -217,10 +228,12 @@ const CompanyDashboard = () => {
                 {[...recentBookings]
                   .reverse()
                   .slice(0, 5)
-                  .map((booking, idx) => {
-                    console.log("Booking object in Overview tab:", booking);
+                  .map((booking) => {
                     return (
-                      <div key={idx} className="dashboard-list-item">
+                      <div
+                        key={booking.bookingId}
+                        className="dashboard-list-item"
+                      >
                         <div>
                           <div className="dashboard-list-title">
                             {booking.userName}
@@ -240,22 +253,17 @@ const CompanyDashboard = () => {
                             <div className="booking-action-buttons">
                               <button
                                 className="accept-btn"
-                                onClick={() => {
-                                  console.log(
-                                    "Clicked booking id:",
-                                    booking._id,
-                                    booking.bookingId
-                                  );
-                                  handleConfirmBooking(
-                                    booking.bookingId || booking._id
-                                  );
-                                }}
+                                onClick={() =>
+                                  handleConfirmBooking(booking.bookingId)
+                                }
                               >
-                                Approve
+                                Confirm
                               </button>
                               <button
                                 className="reject-btn"
-                                onClick={() => handleRejectBooking(booking._id)}
+                                onClick={() =>
+                                  handleRejectBooking(booking.bookingId)
+                                }
                               >
                                 Reject
                               </button>
@@ -282,8 +290,11 @@ const CompanyDashboard = () => {
             <div className="dashboard-card">
               <h3>Ground Performance</h3>
               <div className="dashboard-list">
-                {grounds.slice(0, 3).map((ground) => (
-                  <div key={ground._id} className="dashboard-list-item">
+                {grounds.slice(0, 3).map((ground, index) => (
+                  <div
+                    key={ground._id || `ground-${index}`}
+                    className="dashboard-list-item"
+                  >
                     <div>
                       <div className="dashboard-list-title">{ground.name}</div>
                       <div className="dashboard-list-sub">{ground.sport}</div>
@@ -317,7 +328,6 @@ const CompanyDashboard = () => {
 
             <div className="dashboard-card-grid">
               {grounds.map((ground) => {
-                console.log("Ground data:", ground); // Log all properties
                 return (
                   <div key={ground._id} className="dashboard-card">
                     <div className="dashboard-card-header">
@@ -386,7 +396,6 @@ const CompanyDashboard = () => {
                 </thead>
                 <tbody>
                   {currentBookings.map((booking) => {
-                    console.log("Booking object in Bookings tab:", booking);
                     return (
                       <tr key={booking._id}>
                         <td>{booking.userName}</td>
