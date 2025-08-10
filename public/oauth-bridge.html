@@ -14,38 +14,23 @@
 
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    function redirectByRole(user) {
-      const role = user?.role;
-      if (role === "admin") {
-        window.location.href = "/admin-panel";
-      } else if (role === "company") {
-        window.location.href = "/company-dashboard";
-      } else {
-        window.location.href = "/";
-      }
+    // Capture session from the URL after redirect
+    const { data: { session }, error } = await supabase.auth.getSession();
+
+    if (error) {
+      console.error("Session fetch error:", error);
+      window.location.href = "/login";
+      return;
     }
 
-    async function handleSession(session) {
-      const token = session.access_token;
-      localStorage.setItem("authToken", token);
+    if (session) {
+      // Store token + user info
+      localStorage.setItem("authToken", session.access_token);
       localStorage.setItem("currentUser", JSON.stringify(session.user));
-      redirectByRole(session.user);
-    }
-
-    // Listen for the auth event after redirect
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        handleSession(session);
-      } else {
-        console.error("No session found after redirect");
-        window.location.href = "/login";
-      }
-    });
-
-    // Also try to fetch immediately in case session is ready
-    const { data } = await supabase.auth.getSession();
-    if (data.session) {
-      handleSession(data.session);
+      window.location.href = "/";
+    } else {
+      console.error("No session found after redirect");
+      window.location.href = "/login";
     }
   })();
 </script>
