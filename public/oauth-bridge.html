@@ -5,23 +5,21 @@
     <title>OAuth Bridge</title>
   </head>
   <body>
-    <!-- Load Supabase JS v2 library -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/index.min.js"></script>
+    <!-- Load Supabase library first -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
 
     <script>
-      // Now supabase should be available as a global variable
       console.log("OAuth Bridge Loaded");
-      console.log("typeof supabase:", typeof supabase); // should log "object"
+      console.log("typeof supabase:", typeof supabase);
 
       const SUPABASE_URL = "https://qhsfxcesuhbpvhquuzod.supabase.co";
-      const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoc2Z4Y2VzdWhicHZocXV1em9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwNzcxNjQsImV4cCI6MjA2NzY1MzE2NH0.fS-T2lJGSpc8OWrOADjrpg8E-ZwX0AcBVxBxnrJ0KbY";
+      const SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoc2Z4Y2VzdWhicHZocXV1em9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwNzcxNjQsImV4cCI6MjA2NzY1MzE2NH0.fS-T2lJGSpc8OWrOADjrpg8E-ZwX0AcBVxBxnrJ0KbY";
 
-      // Create client instance
       const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
       (async () => {
         try {
-          // Parse session from URL hash and store it locally
           const { data, error } = await supabaseClient.auth.getSessionFromUrl({
             storeSession: true,
           });
@@ -33,7 +31,6 @@
 
           console.log("Session from URL:", data.session);
 
-          // Confirm session stored successfully
           const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
 
           if (sessionError) {
@@ -43,7 +40,6 @@
 
           if (session) {
             console.log("Session stored successfully:", session);
-            // Redirect to home or app main page
             window.location.href = "/";
           } else {
             console.log("No active session found after parsing URL.");
