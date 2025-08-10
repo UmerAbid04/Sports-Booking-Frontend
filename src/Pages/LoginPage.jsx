@@ -6,11 +6,10 @@ import "../styles/LoginSignup.css";
 import axios from "../api/axiosinstance"; 
 import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
-  "https://qhsfxcesuhbpvhquuzod.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoc2Z4Y2VzdWhicHZocXF1em9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwNzcxNjQsImV4cCI6MjA2NzY1MzE2NH0.fS-T2lJGSpc8OWrOADjrpg8E-ZwX0AcBVxBxnrJ0KbY"
-);
-
+const SUPABASE_URL = "https://qhsfxcesuhbpvhquuzod.supabase.co";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoc2Z4Y2VzdWhicHZocXF1em9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwNzcxNjQsImV4cCI6MjA2NzY1MzE2NH0.fS-T2lJGSpc8OWrOADjrpg8E-ZwX0AcBVxBxnrJ0KbY";
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const GoogleIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -103,10 +102,26 @@ else navigate("/");
   }
 };
 
-const handleSocialLogin = () => {
-  window.location.href =
-    "https://qhsfxcesuhbpvhquuzod.supabase.co/auth/v1/authorize?provider=google&redirect_to=https://sports-booking-frontend-sage.vercel.app/oauth-bridge.html";
+const handleSocialLogin = async () => {
+  console.log("Starting Google login...");
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo:
+        "https://sports-booking-frontend-sage.vercel.app/oauth-bridge.html",
+      queryParams: {
+        prompt: "select_account",
+      },
+    },
+  });
+
+  if (error) {
+    console.error("Error starting Google OAuth:", error);
+  } else {
+    console.log("OAuth redirect initiated:", data);
+  }
 };
+
 
   return (
     <div className="login-bg">
@@ -207,27 +222,29 @@ const handleSocialLogin = () => {
         </div>
 
        <div className="login-social-row">
-  <button
-    className="login-social-btn"
-    type="button"
-    onClick={async () => {
-  // ✅ Clear old app tokens
-  localStorage.removeItem("authToken");
-  localStorage.removeItem("currentUser");
+<button
+  className="login-social-btn"
+  type="button"
+  onClick={async () => {
+    // ✅ Clear old app tokens
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("currentUser");
 
-  // ✅ Clear Supabase session so it doesn't reuse old Google account
-  await supabase.auth.signOut();
+    // ✅ Clear Supabase session so it doesn't reuse old Google account
+    await supabase.auth.signOut();
 
-  // ✅ Start fresh Google OAuth login
-  supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: {
-      redirectTo: "https://sports-booking-frontend-sage.vercel.app/oauth-bridge.html"
-    }
-  });
-}}
-
-  >
+    // ✅ Start fresh Google OAuth login with account chooser
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: "https://sports-booking-frontend-sage.vercel.app/oauth-bridge.html",
+        queryParams: {
+          prompt: "select_account" // forces Google account chooser
+        }
+      }
+    });
+  }}
+>
     <GoogleIcon />
     Google
   </button>
