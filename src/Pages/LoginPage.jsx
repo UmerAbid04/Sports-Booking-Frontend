@@ -200,20 +200,33 @@ else navigate("/");
           <div className="login-divider-line"></div>
         </div>
 
+       <div className="login-social-row">
 <button
   className="login-social-btn"
   type="button"
-  onClick={() => {
-    window.location.href =
-      "https://qhsfxcesuhbpvhquuzod.supabase.co/auth/v1/authorize" +
-      "?provider=google" +
-      "&redirect_to=https://sports-booking-frontend-sage.vercel.app/oauth-bridge.html";
+  onClick={async () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("currentUser");
+
+    await supabase.auth.signOut();
+
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: "https://sports-booking-frontend-sage.vercel.app/oauth-bridge.html",
+        queryParams: {
+          prompt: "select_account"
+        }
+      }
+    });
   }}
 >
-  <GoogleIcon /> Google
+  <GoogleIcon />
+  Google
 </button>
 
 
+</div>
 
         <div style={{ textAlign: "center", marginTop: 10 }}>
   <div className="login-signup-row">

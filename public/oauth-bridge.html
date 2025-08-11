@@ -19,9 +19,10 @@
       try {
         // ✅ Call your Render backend, not GitHub
         const res = await fetch(
-          `http://renderbackend-g73i.onrender.com/auth/supabase/callback?access_token=${accessToken}`,
-          { credentials: "include" }
-        );
+  `https://renderbackend-g73i.onrender.com/auth/supabase/callback?access_token=${accessToken}`,
+  { credentials: "include" }
+);
+
 
         if (!res.ok) throw new Error("Backend login failed");
 
