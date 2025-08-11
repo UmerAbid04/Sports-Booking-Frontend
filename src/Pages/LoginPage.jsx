@@ -102,27 +102,6 @@ else navigate("/");
   }
 };
 
-const handleSocialLogin = async () => {
-  console.log("Starting Google login...");
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: {
-      redirectTo:
-        "https://sports-booking-frontend-sage.vercel.app/oauth-bridge.html",
-      queryParams: {
-        prompt: "select_account",
-      },
-    },
-  });
-
-  if (error) {
-    console.error("Error starting Google OAuth:", error);
-  } else {
-    console.log("OAuth redirect initiated:", data);
-  }
-};
-
-
   return (
     <div className="login-bg">
       <div className="login-card">
@@ -221,34 +200,20 @@ const handleSocialLogin = async () => {
           <div className="login-divider-line"></div>
         </div>
 
-       <div className="login-social-row">
 <button
   className="login-social-btn"
   type="button"
-  onClick={async () => {
-    // ✅ Clear old app tokens
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("currentUser");
-
-    // ✅ Clear Supabase session so it doesn't reuse old Google account
-    await supabase.auth.signOut();
-
-    // ✅ Start fresh Google OAuth login with account chooser
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: "https://sports-booking-frontend-sage.vercel.app/oauth-bridge.html",
-        queryParams: {
-          prompt: "select_account" // forces Google account chooser
-        }
-      }
-    });
+  onClick={() => {
+    window.location.href =
+      "https://qhsfxcesuhbpvhquuzod.supabase.co/auth/v1/authorize" +
+      "?provider=google" +
+      "&redirect_to=https://sports-booking-frontend-sage.vercel.app/oauth-bridge.html";
   }}
 >
-    <GoogleIcon />
-    Google
-  </button>
-</div>
+  <GoogleIcon /> Google
+</button>
+
+
 
         <div style={{ textAlign: "center", marginTop: 10 }}>
   <div className="login-signup-row">

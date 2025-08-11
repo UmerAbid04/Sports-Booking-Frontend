@@ -1,58 +1,42 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>OAuth Bridge</title>
-  </head>
-  <body>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-      console.log("OAuth Bridge Loaded");
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OAuth Bridge</title>
+</head>
+<body>
+  <script>
+    (async () => {
+      // Extract the access_token from the URL
+      const params = new URLSearchParams(window.location.hash.substring(1));
+      const accessToken = params.get("access_token");
 
-      const SUPABASE_URL = "https://qhsfxcesuhbpvhquuzod.supabase.co";
-      const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoc2Z4Y2VzdWhicHZocXV1em9kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIwNzcxNjQsImV4cCI6MjA2NzY1MzE2NH0.fS-T2lJGSpc8OWrOADjrpg8E-ZwX0AcBVxBxnrJ0KbY";
-
-      const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-      // Helper to parse URL hash params into an object
-      function parseHashParams(hash) {
-        return hash
-          .substring(1) // remove '#'
-          .split('&')
-          .reduce((result, item) => {
-            const [key, value] = item.split('=');
-            result[key] = decodeURIComponent(value);
-            return result;
-          }, {});
+      if (!accessToken) {
+        console.error("No access token found in URL.");
+        return;
       }
 
-      (async () => {
-        try {
-          // Parse URL hash for access_token
-          const hashParams = parseHashParams(window.location.hash);
-          console.log("Hash params:", hashParams);
+      try {
+        // ✅ Call your Render backend, not GitHub
+        const res = await fetch(
+          `http://renderbackend-g73i.onrender.com/auth/supabase/callback?access_token=${accessToken}`,
+          { credentials: "include" }
+        );
 
-          if (hashParams.access_token) {
-            // Manually set the session (this is a hack, since supabase-js v2 does not provide setSession)
-            // You can store the access token in localStorage or cookie as needed, or handle server side.
+        if (!res.ok) throw new Error("Backend login failed");
 
-            // Unfortunately, supabase-js v2 currently does not provide a direct method to set the session client-side from token.
-            // So what you do instead is store the access_token for your own use (e.g., in localStorage)
-            localStorage.setItem('sb-access-token', hashParams.access_token);
-            localStorage.setItem('sb-refresh-token', hashParams.refresh_token);
-            localStorage.setItem('sb-expires-at', hashParams.expires_at);
+        const data = await res.json();
 
-            console.log("Access token saved to localStorage.");
+        // ✅ Store the JWT + user info locally for your app
+        localStorage.setItem("authToken", data.token);
+        localStorage.setItem("currentUser", JSON.stringify(data.user));
 
-            // Redirect to your app main page after login
-            window.location.href = "/";
-          } else {
-            console.log("No access token found in URL.");
-          }
-        } catch (err) {
-          console.error("Unexpected error:", err);
-        }
-      })();
-    </script>
-  </body>
+        // ✅ Redirect to main app
+        window.location.href = "https://sports-booking-frontend-sage.vercel.app";
+      } catch (err) {
+        console.error("OAuth bridge error:", err);
+      }
+    })();
+  </script>
+</body>
 </html>
