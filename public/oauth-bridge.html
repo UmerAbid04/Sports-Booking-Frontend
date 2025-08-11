@@ -7,7 +7,6 @@
 <body>
   <script>
     (async () => {
-      // Extract the access_token from the URL
       const params = new URLSearchParams(window.location.hash.substring(1));
       const accessToken = params.get("access_token");
 
@@ -17,22 +16,18 @@
       }
 
       try {
-        // ✅ Call your Render backend, not GitHub
         const res = await fetch(
-  `https://renderbackend-g73i.onrender.com/auth/supabase/callback?access_token=${accessToken}`,
-  { credentials: "include" }
-);
-
+          `https://renderbackend-g73i.onrender.com/api/auth/supabase/callback?access_token=${accessToken}`,
+          { credentials: "include" }
+        );
 
         if (!res.ok) throw new Error("Backend login failed");
 
         const data = await res.json();
 
-        // ✅ Store the JWT + user info locally for your app
         localStorage.setItem("authToken", data.token);
         localStorage.setItem("currentUser", JSON.stringify(data.user));
 
-        // ✅ Redirect to main app
         window.location.href = "https://sports-booking-frontend-sage.vercel.app";
       } catch (err) {
         console.error("OAuth bridge error:", err);
