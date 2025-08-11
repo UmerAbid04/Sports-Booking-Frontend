@@ -381,6 +381,12 @@ const BookingPage = () => {
   }, [selectedCity, selectedSport, selectedDate]);
 
   const handleAddToCart = (ground, slot) => {
+    if (cart.length >= 1) {
+      alert(
+        "Only 1 slot can be added into the cart. If you want more slots, please make a separate booking."
+      );
+      return;
+    }
     const booking = {
       venue: ground.name,
       city: ground.location?.city,
@@ -391,7 +397,7 @@ const BookingPage = () => {
       slotId: slot._id, // Add slot ID for booking creation
       groundId: ground._id, // Add ground ID for booking creation
     };
-    setCart((prev) => [...prev, booking]);
+    setCart([booking]);
   };
 
   const removeFromCart = (index) => {
@@ -419,12 +425,12 @@ const BookingPage = () => {
     try {
       // Create booking for the latest item in cart
       const latest = cart[cart.length - 1];
-      
+
       const bookingResponse = await axios.post(
         "https://renderbackend-g73i.onrender.com/api/booking/user",
         {
           slotId: latest.slotId,
-          specialRequests: ""
+          specialRequests: "",
         },
         {
           headers: {
@@ -610,6 +616,3 @@ const BookingPage = () => {
 };
 
 export default BookingPage;
-
-
-
