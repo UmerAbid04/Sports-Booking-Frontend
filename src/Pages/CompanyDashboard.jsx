@@ -111,15 +111,22 @@ const CompanyDashboard = () => {
   };
 
   // Filtered bookings before pagination
-  const filteredBookings = recentBookings.filter((booking) => {
-    const matchesSearch =
-      booking.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      booking.groundName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus =
-      statusFilter === "all" ||
-      booking.status.toLowerCase() === statusFilter.toLowerCase();
-    return matchesSearch && matchesStatus;
-  });
+ const filteredBookings = recentBookings.filter((booking) => {
+  const userName = booking.userName || "";
+  const groundName = booking.groundName || "";
+  const status = booking.status || "";
+
+  const matchesSearch =
+    userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    groundName.toLowerCase().includes(searchTerm.toLowerCase());
+
+  const matchesStatus =
+    statusFilter === "all" ||
+    status.toLowerCase() === statusFilter.toLowerCase();
+
+  return matchesSearch && matchesStatus;
+});
+
 
   // Pagination after filtering
   const indexOfLastBooking = currentPage * bookingsPerPage;
