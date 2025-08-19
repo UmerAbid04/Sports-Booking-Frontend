@@ -19,6 +19,7 @@ import CompanyDashboard from "./Pages/CompanyDashboard";
 import AdminPanel from "./Pages/AdminPanel";
 import PaymentPage from "./Pages/Payment";
 import DefineSlots from "./Pages/DefineSlots";
+import GuestBookingPage from "./Pages/GuestBookingPage";
 
 import "./App.css";
 
@@ -26,16 +27,16 @@ function App() {
   const [showNavbar, setShowNavbar] = useState(true);
   const [showFooter, setShowFooter] = useState(true);
 
-
   return (
     <>
-    <header><title>Sport Book</title></header>
-    
-    <ScrollToTop />
+      <header>
+        <title>Sport Book</title>
+      </header>
+
+      <ScrollToTop />
       {showNavbar && <Navbar />}
 
       <div className={`main-content ${showNavbar ? "with-navbar" : ""}`}>
-
         <Routes>
           <Route
             path="/"
@@ -77,13 +78,22 @@ function App() {
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/booking" element={<BookingPage />} />
           <Route path="/category" element={<CategoryPage />} />
-          <Route path="/city/:cityName" element={<CityVenuePage />}/>
-          <Route path="/forgot-password" element={<ForgotPassword setShowNavbar={setShowNavbar} setShowFooter={setShowFooter} />} />
+          <Route path="/city/:cityName" element={<CityVenuePage />} />
+          <Route
+            path="/forgot-password"
+            element={
+              <ForgotPassword
+                setShowNavbar={setShowNavbar}
+                setShowFooter={setShowFooter}
+              />
+            }
+          />
           <Route path="/account" element={<UserSetting />} />
           <Route path="/company-dashboard" element={<CompanyDashboard />} />
           <Route path="/admin-panel" element={<AdminPanel />} />
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/define-slots" element={<DefineSlots />} />
+          <Route path="/guest-booking" element={<GuestBookingPage />} />
         </Routes>
       </div>
 

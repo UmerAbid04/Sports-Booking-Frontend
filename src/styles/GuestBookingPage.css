@@ -1,0 +1,90 @@
+/* GuestBookingPage.css - Dark Glassmorphism Booking Page Styles */
+.guest-booking-wrapper {
+  min-height: 100vh;
+  width: 100vw;
+  background: linear-gradient(135deg, #232526 0%, #414345 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.guest-booking-card {
+  background: rgba(30, 32, 38, 0.85);
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 420px;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.guest-booking-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.guest-booking-input {
+  width: 100%;
+  height: 48px;
+  padding: 12px 1rem;
+  border: 1.5px solid #444857;
+  border-radius: 0.75rem;
+  background: rgba(40, 42, 54, 0.85);
+  font-size: 1rem;
+  color: #fff;
+  outline: none;
+  transition: border 0.2s, background 0.2s;
+  margin-bottom: 0.9rem;
+}
+
+.guest-booking-input:focus {
+  border-color: #4f8cff;
+  background: rgba(40, 42, 54, 1);
+}
+
+.guest-booking-btn {
+  width: 100%;
+  background: linear-gradient(90deg, #4f8cff 0%, #a084ee 100%);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 0.9rem 0;
+  border: none;
+  border-radius: 0.75rem;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px 0 rgba(79, 140, 255, 0.10);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.guest-booking-btn:hover {
+  background: linear-gradient(90deg, #3b82f6 0%, #7c3aed 100%);
+  box-shadow: 0 4px 16px 0 rgba(79, 140, 255, 0.15);
+}
+
+@media (max-width: 600px) {
+  .guest-booking-card {
+    padding: 1.5rem 1rem;
+    border-radius: 1rem;
+    max-width: 95%;
+  }
+  .guest-booking-title {
+    font-size: 1.5rem;
+  }
+  .guest-booking-input {
+    height: 42px;
+    font-size: 0.95rem;
+  }
+  .guest-booking-btn {
+    font-size: 1rem;
+    padding: 0.7rem 0;
+  }
+}
