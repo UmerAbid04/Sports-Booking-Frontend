@@ -148,15 +148,6 @@ const CompanyDashboard = () => {
           <h1 className="dashboard-title">Company Dashboard</h1>
           <p className="dashboard-subtitle">Manage your sports facilities</p>
         </div>
-        <div className="dashboard-header-actions">
-          <button className="dashboard-icon-btn">
-            <FaBell />
-          </button>
-          <button className="dashboard-icon-btn">
-            <FaCog />
-          </button>
-          <div className="dashboard-avatar">AC</div>
-        </div>
       </div>
 
       <div className="stats-cards">
