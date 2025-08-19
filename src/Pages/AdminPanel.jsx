@@ -126,11 +126,6 @@ const AdminPanel = () => {
           <div className="admin-title">Admin Panel</div>
           <div className="admin-subtitle">System Administration</div>
         </div>
-        <div className="admin-header-actions">
-          <button className="admin-icon-btn"><FaBell /></button>
-          <button className="admin-icon-btn"><FaCog /></button>
-          <div className="admin-avatar">AD</div>
-        </div>
       </div>
 
      <div className="admin-cards">
@@ -299,3 +294,4 @@ const AdminPanel = () => {
 };
 
 export default AdminPanel;
+
